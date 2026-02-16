@@ -227,7 +227,7 @@ export default function Dashboard() {
         </div>
 
         {/* Quick Links */}
-        <div className="grid sm:grid-cols-2 gap-4">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <button 
             onClick={() => navigate("/flashcards")}
             className="chapter-card p-5 text-left flex items-center justify-between group"
@@ -239,7 +239,7 @@ export default function Dashboard() {
               </div>
               <div>
                 <h3 className="font-semibold text-white">{t("flashcards")}</h3>
-                <p className="text-sm text-zinc-500">{progress?.flashcards_reviewed || 0} {t("flashcardsReviewed")}</p>
+                <p className="text-sm text-zinc-500">{progress?.flashcards_reviewed || 0} {language === "de" ? "gelernt" : "reviewed"}</p>
               </div>
             </div>
             <ChevronRight className="w-5 h-5 text-zinc-600 group-hover:text-emerald-400 transition" />
@@ -260,6 +260,42 @@ export default function Dashboard() {
               </div>
             </div>
             <ChevronRight className="w-5 h-5 text-zinc-600 group-hover:text-emerald-400 transition" />
+          </button>
+
+          {/* Exam Simulation */}
+          <button 
+            onClick={() => navigate("/exam")}
+            className="chapter-card p-5 text-left flex items-center justify-between group border-red-500/20 hover:border-red-500/40"
+            data-testid="goto-exam"
+          >
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-red-500/10 flex items-center justify-center">
+                <Clock className="w-6 h-6 text-red-400" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-white">{language === "de" ? "Prüfungssimulation" : "Exam Simulation"}</h3>
+                <p className="text-sm text-zinc-500">90 min • 60 {language === "de" ? "Fragen" : "questions"}</p>
+              </div>
+            </div>
+            <ChevronRight className="w-5 h-5 text-zinc-600 group-hover:text-red-400 transition" />
+          </button>
+
+          {/* Spaced Repetition */}
+          <button 
+            onClick={() => navigate("/flashcards")}
+            className="chapter-card p-5 text-left flex items-center justify-between group border-[#00ff41]/20 hover:border-[#00ff41]/40"
+            data-testid="goto-sr"
+          >
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-[#00ff41]/10 flex items-center justify-center">
+                <Brain className="w-6 h-6 text-[#00ff41]" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-white">Spaced Repetition</h3>
+                <p className="text-sm text-zinc-500">{language === "de" ? "Intelligentes Lernen" : "Smart learning"}</p>
+              </div>
+            </div>
+            <ChevronRight className="w-5 h-5 text-zinc-600 group-hover:text-[#00ff41] transition" />
           </button>
         </div>
       </main>
