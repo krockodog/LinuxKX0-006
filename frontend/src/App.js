@@ -1,9 +1,12 @@
 import { useState, useEffect, createContext, useContext } from "react";
 import "@/App.css";
-import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import axios from "axios";
 import { Toaster } from "@/components/ui/sonner";
-import { toast } from "sonner";
+
+// Components
+import MatrixBackground from "./components/MatrixBackground";
+import WelcomeScreen from "./components/WelcomeScreen";
 
 // Pages
 import Landing from "./pages/Landing";
@@ -76,7 +79,7 @@ export const translations = {
     streak: "Day Streak",
     welcome: "Welcome back",
     hero1: "Ace the CompTIA Linux+ XK0-006 Exam",
-    hero2: "Comprehensive learning platform with 150+ practice questions, flashcards, and a structured 20-week study plan.",
+    hero2: "Comprehensive learning platform with 100+ practice questions, flashcards, and a structured 20-week study plan.",
     aiExplanation: "AI Explanation",
     aiSettings: "AI Settings",
     getAiExplanation: "Get AI Explanation",
@@ -143,7 +146,7 @@ export const translations = {
     streak: "Tage Serie",
     welcome: "Willkommen zurück",
     hero1: "CompTIA Linux+ XK0-006 Prüfung bestehen",
-    hero2: "Umfassende Lernplattform mit 150+ Übungsfragen, Lernkarten und einem strukturierten 20-Wochen-Lernplan.",
+    hero2: "Umfassende Lernplattform mit 100+ Übungsfragen, Lernkarten und einem strukturierten 20-Wochen-Lernplan.",
     aiExplanation: "KI-Erklärung",
     aiSettings: "KI-Einstellungen",
     getAiExplanation: "KI-Erklärung anfordern",
@@ -157,11 +160,6 @@ export const translations = {
 export const AppContext = createContext();
 
 export const useApp = () => useContext(AppContext);
-
-// No auth required - direct access
-const ProtectedRoute = ({ children }) => {
-  return children;
-};
 
 function AppContent() {
   return (
@@ -178,80 +176,83 @@ function AppContent() {
 }
 
 function App() {
-  const [user, setUser] = useState(null);
+  const [username, setUsername] = useState(null);
   const [language, setLanguage] = useState("en");
   const [loading, setLoading] = useState(true);
+  const [showWelcome, setShowWelcome] = useState(false);
   
   const t = (key) => translations[language][key] || key;
   
   useEffect(() => {
-    // Restore language from localStorage first
+    // Restore language from localStorage
     const savedLang = localStorage.getItem("app_language");
     if (savedLang) {
       setLanguage(savedLang);
     }
     
-    const token = localStorage.getItem("token");
-    if (token) {
-      axios.get(`${API}/auth/me`, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
-      .then(res => {
-        setUser(res.data);
-        if (res.data.language && !savedLang) {
-          setLanguage(res.data.language);
-        }
-      })
-      .catch(() => {
-        localStorage.removeItem("token");
-      })
-      .finally(() => setLoading(false));
+    // Check if user has already entered their name
+    const savedUsername = localStorage.getItem("linux_username");
+    if (savedUsername) {
+      setUsername(savedUsername);
+      setShowWelcome(false);
     } else {
-      setLoading(false);
+      setShowWelcome(true);
     }
+    
+    setLoading(false);
   }, []);
   
-  const login = async (email, password) => {
-    const res = await axios.post(`${API}/auth/login`, { email, password });
-    localStorage.setItem("token", res.data.token);
-    setUser(res.data.user);
-    setLanguage(res.data.user.language || "en");
-    return res.data;
+  const handleWelcomeComplete = (name) => {
+    localStorage.setItem("linux_username", name);
+    setUsername(name);
+    setShowWelcome(false);
   };
   
-  const register = async (email, password, name) => {
-    const res = await axios.post(`${API}/auth/register`, { email, password, name });
-    localStorage.setItem("token", res.data.token);
-    setUser(res.data.user);
-    return res.data;
-  };
-  
-  const logout = () => {
-    localStorage.removeItem("token");
-    setUser(null);
-  };
-  
-  const switchLanguage = async (lang) => {
+  const switchLanguage = (lang) => {
     setLanguage(lang);
     localStorage.setItem("app_language", lang);
-    if (user) {
-      const token = localStorage.getItem("token");
-      try {
-        await axios.put(`${API}/auth/language?language=${lang}`, {}, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-      } catch (e) {
-        console.error("Failed to update language preference");
-      }
-    }
+  };
+
+  const logout = () => {
+    localStorage.removeItem("linux_username");
+    localStorage.removeItem("linux_progress");
+    setUsername(null);
+    setShowWelcome(true);
   };
   
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#0a0a0b] flex items-center justify-center">
+        <MatrixBackground />
+        <div className="animate-spin w-8 h-8 border-2 border-[#00ff41] border-t-transparent rounded-full"></div>
+      </div>
+    );
+  }
+  
   return (
-    <AppContext.Provider value={{ user, setUser, language, setLanguage: switchLanguage, t, login, register, logout, loading }}>
+    <AppContext.Provider value={{ 
+      username, 
+      setUsername, 
+      language, 
+      setLanguage: switchLanguage, 
+      t, 
+      logout,
+      loading 
+    }}>
       <div className="App dark">
-        <BrowserRouter>
-          <AppContent />
-        </BrowserRouter>
+        <MatrixBackground />
+        
+        {showWelcome ? (
+          <WelcomeScreen 
+            onComplete={handleWelcomeComplete} 
+            language={language}
+          />
+        ) : (
+          <BrowserRouter>
+            <AppContent />
+          </BrowserRouter>
+        )}
+        
         <Toaster position="top-right" theme="dark" />
       </div>
     </AppContext.Provider>
