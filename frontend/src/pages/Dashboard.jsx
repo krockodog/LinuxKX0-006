@@ -6,7 +6,7 @@ import { Progress } from "@/components/ui/progress";
 import { 
   Terminal, BookOpen, BarChart3, Calendar,
   ChevronRight, Trophy, Flame, CheckCircle2,
-  Play, Target, LogOut, User
+  Play, Target, LogOut, User, Clock, Brain
 } from "lucide-react";
 import axios from "axios";
 
