@@ -78,7 +78,7 @@ agenthub/agents/youtube/db
 
 # Mobile development
 android-sdk/ -e 
-# Environment files
-*.env
-*.env.*
+# Environment files - DO NOT IGNORE .env files (required for Emergent deployment)
+# *.env
+# *.env.*
 frontend/node_modules/electron/dist/electron
