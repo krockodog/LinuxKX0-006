@@ -180,6 +180,7 @@ function App() {
   const [language, setLanguage] = useState("en");
   const [loading, setLoading] = useState(true);
   const [showWelcome, setShowWelcome] = useState(false);
+  const [hasStarted, setHasStarted] = useState(false);
   
   const t = (key) => translations[language][key] || key;
   
@@ -194,13 +195,19 @@ function App() {
     const savedUsername = localStorage.getItem("linux_username");
     if (savedUsername) {
       setUsername(savedUsername);
+      setHasStarted(true);
       setShowWelcome(false);
-    } else {
-      setShowWelcome(true);
     }
     
     setLoading(false);
   }, []);
+  
+  const handleGetStarted = () => {
+    setHasStarted(true);
+    if (!username) {
+      setShowWelcome(true);
+    }
+  };
   
   const handleWelcomeComplete = (name) => {
     localStorage.setItem("linux_username", name);
@@ -217,7 +224,8 @@ function App() {
     localStorage.removeItem("linux_username");
     localStorage.removeItem("linux_progress");
     setUsername(null);
-    setShowWelcome(true);
+    setHasStarted(false);
+    setShowWelcome(false);
   };
   
   if (loading) {
@@ -237,21 +245,23 @@ function App() {
       setLanguage: switchLanguage, 
       t, 
       logout,
-      loading 
+      loading,
+      handleGetStarted,
+      hasStarted
     }}>
       <div className="App dark">
         <MatrixBackground />
         
-        {showWelcome ? (
+        {showWelcome && (
           <WelcomeScreen 
             onComplete={handleWelcomeComplete} 
             language={language}
           />
-        ) : (
-          <BrowserRouter>
-            <AppContent />
-          </BrowserRouter>
         )}
+        
+        <BrowserRouter>
+          <AppContent />
+        </BrowserRouter>
         
         <Toaster position="top-right" theme="dark" />
       </div>
