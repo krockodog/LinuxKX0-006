@@ -38,17 +38,13 @@ export default function StudyPlan() {
     fetchData();
   }, []);
 
-  const handleSetCurrentWeek = async (week) => {
-    const token = localStorage.getItem("token");
-    try {
-      await axios.put(`${API}/progress/week?week=${week}`, {}, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setProgress({ ...progress, current_week: week });
-      toast.success(language === "de" ? `Woche ${week} ausgewählt` : `Week ${week} selected`);
-    } catch (error) {
-      toast.error(language === "de" ? "Fehler" : "Failed");
-    }
+  const handleSetCurrentWeek = (week) => {
+    const savedProgress = localStorage.getItem("linux_progress");
+    const localProgress = savedProgress ? JSON.parse(savedProgress) : {};
+    localProgress.current_week = week;
+    localStorage.setItem("linux_progress", JSON.stringify(localProgress));
+    setProgress({ ...progress, current_week: week });
+    toast.success(language === "de" ? `Woche ${week} ausgewählt` : `Week ${week} selected`);
   };
 
   const currentWeek = progress?.current_week || 1;
