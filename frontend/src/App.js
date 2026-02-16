@@ -14,6 +14,7 @@ import Dashboard from "./pages/Dashboard";
 import Quiz from "./pages/Quiz";
 import Flashcards from "./pages/Flashcards";
 import StudyPlan from "./pages/StudyPlan";
+import ExamSimulation from "./pages/ExamSimulation";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 export const API = `${BACKEND_URL}/api`;
