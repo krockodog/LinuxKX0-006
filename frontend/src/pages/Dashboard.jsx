@@ -51,6 +51,12 @@ export default function Dashboard() {
     ? Math.round((progress.total_correct / progress.total_questions) * 100) 
     : 0;
 
+  // Save progress to localStorage whenever it changes
+  const updateProgress = (newProgress) => {
+    setProgress(newProgress);
+    localStorage.setItem("linux_progress", JSON.stringify(newProgress));
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-[#0a0a0b] flex items-center justify-center">
