@@ -101,7 +101,8 @@ export default function Quiz() {
       }
     };
     fetchData();
-  }, [chapter, language]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chapter, language, aiEnabled]);
 
   // Update API key when provider changes
   useEffect(() => {
