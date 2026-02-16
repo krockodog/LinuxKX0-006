@@ -97,9 +97,6 @@ export default function Dashboard() {
               <button onClick={() => setLanguage("en")} className={`lang-btn ${language === "en" ? "active" : "text-zinc-400"}`}>EN</button>
               <button onClick={() => setLanguage("de")} className={`lang-btn ${language === "de" ? "active" : "text-zinc-400"}`}>DE</button>
             </div>
-            <Button variant="ghost" onClick={logout} className="text-zinc-400 hover:text-red-400" data-testid="logout-btn">
-              <LogOut className="w-4 h-4" />
-            </Button>
           </div>
         </div>
       </header>
