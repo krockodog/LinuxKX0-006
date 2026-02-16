@@ -104,9 +104,10 @@ Build a complete learning app from a CompTIA Linux+ XK0-006 exam preparation PDF
 - [x] Username welcome screen
 
 ### P1 (High Priority)
+- [x] Exam simulation mode (90-minute timer, 60 questions)
+- [x] Spaced repetition algorithm for flashcards
 - [ ] Build and distribute Windows installer
 - [ ] Add more questions (currently 100, PDF has 150+)
-- [ ] Exam simulation mode (timed 90-minute tests)
 
 ### P2 (Medium Priority)
 - [ ] Spaced repetition algorithm for flashcards
