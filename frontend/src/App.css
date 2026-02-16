@@ -6,6 +6,8 @@
   --terminal-yellow: #fbbf24;
   --terminal-red: #ef4444;
   --terminal-purple: #a855f7;
+  --matrix-green: #00ff41;
+  --matrix-dark-green: #008f11;
   --bg-dark: #0a0a0b;
   --bg-card: #111113;
   --bg-elevated: #18181b;
@@ -20,10 +22,179 @@ body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   background: var(--bg-dark);
   color: #fafafa;
+  overflow-x: hidden;
 }
 
 .font-mono {
   font-family: 'JetBrains Mono', monospace;
+}
+
+/* ============ MATRIX BACKGROUND ============ */
+.matrix-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  overflow: hidden;
+  background: linear-gradient(180deg, #000000 0%, #0a0a0b 50%, #000000 100%);
+}
+
+.matrix-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Matrix rain columns */
+.matrix-column {
+  position: absolute;
+  top: -100%;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  line-height: 1.2;
+  color: var(--matrix-green);
+  text-shadow: 0 0 8px var(--matrix-green), 0 0 20px var(--matrix-dark-green);
+  animation: matrix-fall linear infinite;
+  white-space: nowrap;
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  opacity: 0.7;
+}
+
+@keyframes matrix-fall {
+  0% {
+    transform: translateY(-100%);
+    opacity: 1;
+  }
+  75% {
+    opacity: 0.7;
+  }
+  100% {
+    transform: translateY(calc(100vh + 100%));
+    opacity: 0;
+  }
+}
+
+/* Matrix glow overlay */
+.matrix-glow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, rgba(0, 255, 65, 0.03) 0%, transparent 70%);
+}
+
+/* Username welcome screen */
+.welcome-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.95);
+}
+
+.welcome-card {
+  background: linear-gradient(135deg, rgba(17, 17, 19, 0.95), rgba(24, 24, 27, 0.95));
+  border: 1px solid var(--matrix-green);
+  border-radius: 20px;
+  padding: 48px;
+  max-width: 450px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 0 60px rgba(0, 255, 65, 0.2), 0 0 100px rgba(0, 255, 65, 0.1);
+  animation: welcome-pulse 2s ease-in-out infinite;
+}
+
+@keyframes welcome-pulse {
+  0%, 100% {
+    box-shadow: 0 0 60px rgba(0, 255, 65, 0.2), 0 0 100px rgba(0, 255, 65, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 80px rgba(0, 255, 65, 0.3), 0 0 120px rgba(0, 255, 65, 0.15);
+  }
+}
+
+.welcome-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--matrix-green);
+  text-shadow: 0 0 20px var(--matrix-green);
+  margin-bottom: 8px;
+}
+
+.welcome-subtitle {
+  color: #71717a;
+  font-size: 14px;
+  margin-bottom: 32px;
+}
+
+.welcome-input {
+  width: 100%;
+  background: rgba(0, 255, 65, 0.05);
+  border: 2px solid var(--matrix-dark-green);
+  border-radius: 12px;
+  padding: 16px 20px;
+  font-size: 18px;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--matrix-green);
+  text-align: center;
+  transition: all 0.3s ease;
+  margin-bottom: 24px;
+}
+
+.welcome-input:focus {
+  outline: none;
+  border-color: var(--matrix-green);
+  box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+  background: rgba(0, 255, 65, 0.1);
+}
+
+.welcome-input::placeholder {
+  color: rgba(0, 255, 65, 0.4);
+}
+
+.welcome-btn {
+  width: 100%;
+  background: linear-gradient(135deg, var(--matrix-green), var(--matrix-dark-green));
+  color: #000;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  font-size: 16px;
+  padding: 16px 32px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.welcome-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0, 255, 65, 0.4);
+}
+
+.welcome-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.matrix-text {
+  color: var(--matrix-green);
+  text-shadow: 0 0 10px var(--matrix-green);
 }
 
 /* Terminal-style cursor blink */
