@@ -300,18 +300,20 @@ export default function Quiz() {
             </p>
           </div>
 
-          {/* AI Settings Button */}
-          <div className="flex justify-end mb-4">
-            <Button 
-              onClick={() => setShowAiSettings(true)} 
-              variant="outline"
-              className="border-purple-500/30 text-purple-400 hover:bg-purple-500/10"
-              data-testid="ai-settings-btn"
-            >
-              <Settings className="w-4 h-4 mr-2" />
-              {language === "de" ? "KI-Einstellungen" : "AI Settings"}
-            </Button>
-          </div>
+          {/* AI Settings Button - only show if AI is enabled */}
+          {aiEnabled && (
+            <div className="flex justify-end mb-4">
+              <Button 
+                onClick={() => setShowAiSettings(true)} 
+                variant="outline"
+                className="border-purple-500/30 text-purple-400 hover:bg-purple-500/10"
+                data-testid="ai-settings-btn"
+              >
+                <Settings className="w-4 h-4 mr-2" />
+                {language === "de" ? "KI-Einstellungen" : "AI Settings"}
+              </Button>
+            </div>
+          )}
 
           {/* Answer Review */}
           <div className="space-y-4 mb-8">
