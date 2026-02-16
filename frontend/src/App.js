@@ -231,11 +231,16 @@ function App() {
   
   const switchLanguage = async (lang) => {
     setLanguage(lang);
+    localStorage.setItem("app_language", lang);
     if (user) {
       const token = localStorage.getItem("token");
-      await axios.put(`${API}/auth/language?language=${lang}`, {}, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      try {
+        await axios.put(`${API}/auth/language?language=${lang}`, {}, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+      } catch (e) {
+        console.error("Failed to update language preference");
+      }
     }
   };
   
