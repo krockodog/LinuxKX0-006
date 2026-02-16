@@ -43,19 +43,17 @@ export default function Flashcards() {
     fetchData();
   }, [selectedChapter, language]);
 
-  const handleNext = async () => {
+  const handleNext = () => {
     setFlipped(false);
     setTimeout(() => {
       setCurrentIndex((prev) => (prev + 1) % flashcards.length);
     }, 150);
     
-    // Track review
-    const token = localStorage.getItem("token");
-    try {
-      await axios.post(`${API}/flashcards/reviewed`, {}, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-    } catch (e) {}
+    // Track review locally
+    const savedProgress = localStorage.getItem("linux_progress");
+    const progress = savedProgress ? JSON.parse(savedProgress) : { flashcards_reviewed: 0 };
+    progress.flashcards_reviewed = (progress.flashcards_reviewed || 0) + 1;
+    localStorage.setItem("linux_progress", JSON.stringify(progress));
   };
 
   const handlePrev = () => {
