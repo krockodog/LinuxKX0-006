@@ -1,11 +1,16 @@
 import { useApp } from "../App";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Terminal, BookOpen, BarChart3, Calendar, ChevronRight, Cpu } from "lucide-react";
+import { Terminal, BookOpen, BarChart3, Calendar, ChevronRight, Cpu, Clock, Zap } from "lucide-react";
 
 export default function Landing() {
-  const { t, language, setLanguage, username } = useApp();
+  const { t, language, setLanguage, username, handleGetStarted } = useApp();
   const navigate = useNavigate();
+
+  const onGetStarted = () => {
+    handleGetStarted();
+    navigate("/dashboard");
+  };
 
   return (
     <div className="min-h-screen bg-transparent relative overflow-hidden">
@@ -45,7 +50,7 @@ export default function Landing() {
           )}
           
           <Button 
-            onClick={() => navigate("/dashboard")}
+            onClick={onGetStarted}
             className="bg-gradient-to-r from-[#00ff41] to-[#008f11] text-black font-semibold px-6 hover:shadow-[0_0_20px_rgba(0,255,65,0.4)]"
             data-testid="login-btn"
           >
@@ -77,7 +82,7 @@ export default function Landing() {
           {/* CTA */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fadeIn delay-300">
             <Button 
-              onClick={() => navigate("/dashboard")}
+              onClick={onGetStarted}
               className="btn-primary text-black font-semibold px-8 py-6 text-lg"
               data-testid="get-started-btn"
             >
@@ -88,20 +93,22 @@ export default function Landing() {
         </div>
 
         {/* Features Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-32">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-32">
           {[
-            { icon: Terminal, title: t("quizMode"), desc: t("quizDesc"), color: "emerald" },
-            { icon: BookOpen, title: t("flashcardsMode"), desc: t("flashcardsDesc"), color: "cyan" },
-            { icon: BarChart3, title: t("trackProgress"), desc: t("trackDesc"), color: "yellow" },
-            { icon: Calendar, title: t("weekPlan"), desc: t("weekPlanDesc"), color: "purple" },
+            { icon: Terminal, title: t("quizMode"), desc: t("quizDesc"), color: "#10b981" },
+            { icon: BookOpen, title: t("flashcardsMode"), desc: t("flashcardsDesc"), color: "#06b6d4" },
+            { icon: BarChart3, title: t("trackProgress"), desc: t("trackDesc"), color: "#fbbf24" },
+            { icon: Calendar, title: t("weekPlan"), desc: t("weekPlanDesc"), color: "#a855f7" },
+            { icon: Clock, title: language === "de" ? "Prüfungssimulation" : "Exam Simulation", desc: language === "de" ? "90-Minuten-Timer wie in der echten Prüfung" : "90-minute timer like the real exam", color: "#ef4444" },
+            { icon: Zap, title: language === "de" ? "Spaced Repetition" : "Spaced Repetition", desc: language === "de" ? "Intelligenter Wiederholungsalgorithmus" : "Smart review algorithm for better retention", color: "#00ff41" },
           ].map((feature, i) => (
             <div 
               key={i} 
               className="chapter-card p-6 animate-fadeIn"
               style={{ animationDelay: `${400 + i * 100}ms` }}
             >
-              <div className={`w-12 h-12 rounded-lg bg-${feature.color}-500/10 flex items-center justify-center mb-4`}>
-                <feature.icon className={`w-6 h-6 text-${feature.color}-400`} style={{ color: feature.color === "emerald" ? "#10b981" : feature.color === "cyan" ? "#06b6d4" : feature.color === "yellow" ? "#fbbf24" : "#a855f7" }} />
+              <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-4" style={{ backgroundColor: `${feature.color}15` }}>
+                <feature.icon className="w-6 h-6" style={{ color: feature.color }} />
               </div>
               <h3 className="text-lg font-semibold text-white mb-2">{feature.title}</h3>
               <p className="text-sm text-zinc-400">{feature.desc}</p>
@@ -112,10 +119,10 @@ export default function Landing() {
         {/* Stats */}
         <div className="flex flex-wrap justify-center gap-12 mt-24 animate-fadeIn delay-500">
           {[
-            { value: "150+", label: "Practice Questions" },
-            { value: "30+", label: "Flashcards" },
-            { value: "20", label: "Week Study Plan" },
-            { value: "5", label: "Exam Domains" },
+            { value: "100+", label: language === "de" ? "Übungsfragen" : "Practice Questions" },
+            { value: "45+", label: language === "de" ? "Lernkarten" : "Flashcards" },
+            { value: "20", label: language === "de" ? "Wochen Lernplan" : "Week Study Plan" },
+            { value: "90", label: language === "de" ? "Minuten Simulation" : "Min Exam Simulation" },
           ].map((stat, i) => (
             <div key={i} className="text-center">
               <div className="text-4xl font-bold gradient-text font-mono">{stat.value}</div>
