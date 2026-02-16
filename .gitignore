@@ -97,3 +97,7 @@ frontend/node_modules/electron/dist/electron
 frontend/dist/win-unpacked/resources/app.asar
 frontend/dist/win-unpacked/Linux+
 Mastery.exe
+-e 
+# Environment files
+*.env
+*.env.*
