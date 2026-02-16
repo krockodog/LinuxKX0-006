@@ -4,8 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { 
-  Terminal, BookOpen, BarChart3, Calendar, LogOut, 
-  ChevronRight, Trophy, Flame, CheckCircle2, Clock,
+  Terminal, BookOpen, BarChart3, Calendar,
+  ChevronRight, Trophy, Flame, CheckCircle2,
   Play, Target
 } from "lucide-react";
 import axios from "axios";
