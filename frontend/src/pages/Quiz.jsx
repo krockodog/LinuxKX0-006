@@ -56,28 +56,63 @@ export default function Quiz() {
     }
 
     setSubmitting(true);
-    const token = localStorage.getItem("token");
     
-    try {
-      const answers = questions.map(q => ({
+    // Calculate results locally
+    let correct = 0;
+    const resultsList = [];
+    
+    for (const q of questions) {
+      const selected = selectedAnswers[q.id];
+      const isCorrect = selected === q.correct_answer;
+      if (isCorrect) correct++;
+      resultsList.push({
         question_id: q.id,
-        selected_answer: selectedAnswers[q.id]
-      }));
-      
-      const res = await axios.post(`${API}/quiz/submit?chapter=${chapter}`, answers, {
-        headers: { Authorization: `Bearer ${token}` }
+        selected: selected,
+        correct: q.correct_answer,
+        is_correct: isCorrect,
+        explanation: q.explanation
       });
-      
-      setResults(res.data);
-      setShowResults(true);
-      
-      if (res.data.percentage >= 70) {
-        toast.success(language === "de" ? "Kapitel bestanden!" : "Chapter passed!");
-      }
-    } catch (error) {
-      toast.error(language === "de" ? "Fehler beim Absenden" : "Failed to submit");
-    } finally {
-      setSubmitting(false);
+    }
+    
+    const total = questions.length;
+    const percentage = Math.round((correct / total) * 100);
+    
+    const quizResult = {
+      id: Date.now().toString(),
+      chapter: parseInt(chapter),
+      score: correct,
+      total: total,
+      percentage: percentage,
+      results: resultsList,
+      completed_at: new Date().toISOString()
+    };
+    
+    // Update local progress
+    const savedProgress = localStorage.getItem("linux_progress");
+    const progress = savedProgress ? JSON.parse(savedProgress) : {
+      total_quizzes: 0,
+      total_correct: 0,
+      total_questions: 0,
+      chapters_completed: [],
+      quiz_history: []
+    };
+    
+    progress.total_quizzes += 1;
+    progress.total_correct += correct;
+    progress.total_questions += total;
+    if (percentage >= 70 && !progress.chapters_completed.includes(parseInt(chapter))) {
+      progress.chapters_completed.push(parseInt(chapter));
+    }
+    progress.quiz_history = [quizResult, ...(progress.quiz_history || [])].slice(0, 10);
+    
+    localStorage.setItem("linux_progress", JSON.stringify(progress));
+    
+    setResults(quizResult);
+    setShowResults(true);
+    setSubmitting(false);
+    
+    if (percentage >= 70) {
+      toast.success(language === "de" ? "Kapitel bestanden!" : "Chapter passed!");
     }
   };
 
