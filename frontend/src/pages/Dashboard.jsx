@@ -6,12 +6,12 @@ import { Progress } from "@/components/ui/progress";
 import { 
   Terminal, BookOpen, BarChart3, Calendar,
   ChevronRight, Trophy, Flame, CheckCircle2,
-  Play, Target
+  Play, Target, LogOut, User
 } from "lucide-react";
 import axios from "axios";
 
 export default function Dashboard() {
-  const { t, language, setLanguage } = useApp();
+  const { t, language, setLanguage, username, logout } = useApp();
   const navigate = useNavigate();
   const [chapters, setChapters] = useState([]);
   const [progress, setProgress] = useState({
