@@ -49,18 +49,39 @@ export default function Quiz() {
   const [saveApiKey, setSaveApiKey] = useState(true);
   const [aiExplanations, setAiExplanations] = useState({});
   const [loadingExplanation, setLoadingExplanation] = useState({});
+  const [aiEnabled, setAiEnabled] = useState(true);
+
+  // Check if running in Electron and if AI is enabled
+  useEffect(() => {
+    const checkAiEnabled = async () => {
+      if (window.electronAPI) {
+        const enabled = await window.electronAPI.getAiEnabled();
+        setAiEnabled(enabled);
+      }
+    };
+    checkAiEnabled();
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [questionsRes, chaptersRes, providersRes] = await Promise.all([
+        const requests = [
           axios.get(`${API}/questions/${chapter}?limit=10`),
-          axios.get(`${API}/chapters`),
-          axios.get(`${API}/ai/providers`)
-        ]);
+          axios.get(`${API}/chapters`)
+        ];
+        
+        // Only fetch AI providers if AI is enabled
+        if (aiEnabled) {
+          requests.push(axios.get(`${API}/ai/providers`));
+        }
+        
+        const [questionsRes, chaptersRes, providersRes] = await Promise.all(requests);
         setQuestions(questionsRes.data);
         setChapterInfo(chaptersRes.data.find(c => c.id === parseInt(chapter)));
-        setAiProviders(providersRes.data);
+        
+        if (providersRes) {
+          setAiProviders(providersRes.data);
+        }
         
         // Load saved AI settings
         const savedProvider = localStorage.getItem("ai_provider");
