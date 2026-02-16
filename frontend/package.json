@@ -55,10 +55,15 @@
     "vaul": "^1.1.2",
     "zod": "^3.24.4"
   },
+  "main": "public/electron.js",
+  "homepage": "./",
   "scripts": {
     "start": "craco start",
     "build": "craco build",
-    "test": "craco test"
+    "test": "craco test",
+    "electron-dev": "concurrently \"BROWSER=none yarn start\" \"wait-on http://localhost:3000 && electron .\"",
+    "electron-build": "yarn build && electron-builder --config electron-builder.json",
+    "electron-build-win": "yarn build && electron-builder --config electron-builder.json --win"
   },
   "browserslist": {
     "production": [
