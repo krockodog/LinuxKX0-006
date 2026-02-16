@@ -20,6 +20,10 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchData = async () => {
       const token = localStorage.getItem("token");
+      if (!token) {
+        setLoading(false);
+        return;
+      }
       try {
         const [chaptersRes, progressRes] = await Promise.all([
           axios.get(`${API}/chapters`),
@@ -28,7 +32,7 @@ export default function Dashboard() {
         setChapters(chaptersRes.data);
         setProgress(progressRes.data);
       } catch (error) {
-        console.error(error);
+        console.error("Dashboard fetch error:", error);
       } finally {
         setLoading(false);
       }
