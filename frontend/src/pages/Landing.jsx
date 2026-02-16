@@ -71,7 +71,7 @@ export default function Landing() {
           {/* CTA */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fadeIn delay-300">
             <Button 
-              onClick={() => navigate("/auth")}
+              onClick={() => navigate("/dashboard")}
               className="btn-primary text-black font-semibold px-8 py-6 text-lg"
               data-testid="get-started-btn"
             >
