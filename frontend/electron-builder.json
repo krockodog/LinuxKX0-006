@@ -1,0 +1,43 @@
+{
+  "appId": "com.linuxmastery.app",
+  "productName": "Linux+ Mastery",
+  "directories": {
+    "output": "dist",
+    "buildResources": "build-resources"
+  },
+  "files": [
+    "build/**/*",
+    "public/electron.js",
+    "public/preload.js"
+  ],
+  "win": {
+    "target": [
+      {
+        "target": "nsis",
+        "arch": ["x64"]
+      }
+    ],
+    "icon": "build-resources/icon.ico"
+  },
+  "nsis": {
+    "oneClick": false,
+    "allowToChangeInstallationDirectory": true,
+    "installerIcon": "build-resources/icon.ico",
+    "uninstallerIcon": "build-resources/icon.ico",
+    "installerHeaderIcon": "build-resources/icon.ico",
+    "createDesktopShortcut": true,
+    "createStartMenuShortcut": true,
+    "shortcutName": "Linux+ Mastery",
+    "include": "installer.nsh",
+    "customNsisBinary": null,
+    "warningsAsErrors": false,
+    "differentialPackage": false
+  },
+  "extraResources": [
+    {
+      "from": "build-resources/",
+      "to": "resources",
+      "filter": ["**/*"]
+    }
+  ]
+}
