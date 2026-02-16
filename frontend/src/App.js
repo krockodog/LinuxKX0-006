@@ -77,6 +77,12 @@ export const translations = {
     welcome: "Welcome back",
     hero1: "Ace the CompTIA Linux+ XK0-006 Exam",
     hero2: "Comprehensive learning platform with 150+ practice questions, flashcards, and a structured 20-week study plan.",
+    aiExplanation: "AI Explanation",
+    aiSettings: "AI Settings",
+    getAiExplanation: "Get AI Explanation",
+    aiProvider: "AI Provider",
+    apiKey: "API Key",
+    saveApiKey: "Save API Key",
   },
   de: {
     appName: "Linux+ Meisterschaft",
