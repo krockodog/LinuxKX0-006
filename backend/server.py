@@ -18,6 +18,9 @@ import httpx
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
+# Import extended questions
+from questions_extended import EXTENDED_QUESTIONS, EXTENDED_FLASHCARDS
+
 # MongoDB connection
 mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
