@@ -153,18 +153,15 @@ const ProtectedRoute = ({ children }) => {
 };
 
 function AppContent() {
-  const { user } = useApp();
-  const location = useLocation();
-  
   return (
     <Routes>
-      <Route path="/" element={user ? <Navigate to="/dashboard" /> : <Landing />} />
-      <Route path="/auth" element={user ? <Navigate to="/dashboard" /> : <Auth />} />
-      <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-      <Route path="/quiz/:chapter" element={<ProtectedRoute><Quiz /></ProtectedRoute>} />
-      <Route path="/flashcards" element={<ProtectedRoute><Flashcards /></ProtectedRoute>} />
-      <Route path="/flashcards/:chapter" element={<ProtectedRoute><Flashcards /></ProtectedRoute>} />
-      <Route path="/studyplan" element={<ProtectedRoute><StudyPlan /></ProtectedRoute>} />
+      <Route path="/" element={<Landing />} />
+      <Route path="/auth" element={<Navigate to="/dashboard" />} />
+      <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/quiz/:chapter" element={<Quiz />} />
+      <Route path="/flashcards" element={<Flashcards />} />
+      <Route path="/flashcards/:chapter" element={<Flashcards />} />
+      <Route path="/studyplan" element={<StudyPlan />} />
     </Routes>
   );
 }
