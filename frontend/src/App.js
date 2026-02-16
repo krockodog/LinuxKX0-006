@@ -191,6 +191,12 @@ function App() {
   const t = (key) => translations[language][key] || key;
   
   useEffect(() => {
+    // Restore language from localStorage first
+    const savedLang = localStorage.getItem("app_language");
+    if (savedLang) {
+      setLanguage(savedLang);
+    }
+    
     const token = localStorage.getItem("token");
     if (token) {
       axios.get(`${API}/auth/me`, {
@@ -198,7 +204,9 @@ function App() {
       })
       .then(res => {
         setUser(res.data);
-        setLanguage(res.data.language || "en");
+        if (res.data.language && !savedLang) {
+          setLanguage(res.data.language);
+        }
       })
       .catch(() => {
         localStorage.removeItem("token");
