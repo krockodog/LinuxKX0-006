@@ -361,37 +361,39 @@ export default function Quiz() {
                         </div>
                       )}
 
-                      {/* AI Explanation */}
-                      {aiExplanations[result.question_id] ? (
-                        <div className="mt-3 p-3 bg-purple-900/20 border border-purple-500/30 rounded-lg">
-                          <div className="flex items-center gap-2 mb-2">
-                            <Sparkles className="w-4 h-4 text-purple-400" />
-                            <p className="text-xs text-purple-400 uppercase font-semibold">
-                              {language === "de" ? "KI-Erklärung" : "AI Explanation"}
-                            </p>
+                      {/* AI Explanation - only show if AI is enabled */}
+                      {aiEnabled && (
+                        aiExplanations[result.question_id] ? (
+                          <div className="mt-3 p-3 bg-purple-900/20 border border-purple-500/30 rounded-lg">
+                            <div className="flex items-center gap-2 mb-2">
+                              <Sparkles className="w-4 h-4 text-purple-400" />
+                              <p className="text-xs text-purple-400 uppercase font-semibold">
+                                {language === "de" ? "KI-Erklärung" : "AI Explanation"}
+                              </p>
+                            </div>
+                            <p className="text-sm text-zinc-300 whitespace-pre-wrap">{aiExplanations[result.question_id]}</p>
                           </div>
-                          <p className="text-sm text-zinc-300 whitespace-pre-wrap">{aiExplanations[result.question_id]}</p>
-                        </div>
-                      ) : (
-                        <Button
-                          onClick={() => getAiExplanation(result.question_id)}
-                          disabled={loadingExplanation[result.question_id]}
-                          className="mt-3 bg-purple-600 hover:bg-purple-700 text-white"
-                          size="sm"
-                          data-testid={`ai-explain-btn-${idx}`}
-                        >
-                          {loadingExplanation[result.question_id] ? (
-                            <>
-                              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                              {language === "de" ? "Lädt..." : "Loading..."}
-                            </>
-                          ) : (
-                            <>
-                              <Sparkles className="w-4 h-4 mr-2" />
-                              {language === "de" ? "KI-Erklärung anfordern" : "Get AI Explanation"}
-                            </>
-                          )}
-                        </Button>
+                        ) : (
+                          <Button
+                            onClick={() => getAiExplanation(result.question_id)}
+                            disabled={loadingExplanation[result.question_id]}
+                            className="mt-3 bg-purple-600 hover:bg-purple-700 text-white"
+                            size="sm"
+                            data-testid={`ai-explain-btn-${idx}`}
+                          >
+                            {loadingExplanation[result.question_id] ? (
+                              <>
+                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                {language === "de" ? "Lädt..." : "Loading..."}
+                              </>
+                            ) : (
+                              <>
+                                <Sparkles className="w-4 h-4 mr-2" />
+                                {language === "de" ? "KI-Erklärung anfordern" : "Get AI Explanation"}
+                              </>
+                            )}
+                          </Button>
+                        )
                       )}
                     </div>
                   </div>
