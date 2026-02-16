@@ -39,11 +39,11 @@ export default function Landing() {
           </div>
           
           <Button 
-            onClick={() => navigate("/auth")}
+            onClick={() => navigate("/dashboard")}
             className="btn-primary text-black font-semibold px-6"
             data-testid="login-btn"
           >
-            {t("login")}
+            {t("getStarted")}
           </Button>
         </div>
       </header>
