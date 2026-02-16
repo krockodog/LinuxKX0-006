@@ -5,8 +5,25 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { 
   Terminal, ArrowLeft, ArrowRight, CheckCircle2, XCircle, 
-  RotateCcw, Home, Trophy, AlertCircle
+  RotateCcw, Home, Trophy, AlertCircle, Sparkles, Key, Settings, Loader2
 } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import axios from "axios";
 import { toast } from "sonner";
 
@@ -22,24 +39,62 @@ export default function Quiz() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [chapterInfo, setChapterInfo] = useState(null);
+  
+  // AI Explanation state
+  const [aiProviders, setAiProviders] = useState([]);
+  const [showAiSettings, setShowAiSettings] = useState(false);
+  const [selectedProvider, setSelectedProvider] = useState("");
+  const [selectedModel, setSelectedModel] = useState("");
+  const [apiKey, setApiKey] = useState("");
+  const [saveApiKey, setSaveApiKey] = useState(true);
+  const [aiExplanations, setAiExplanations] = useState({});
+  const [loadingExplanation, setLoadingExplanation] = useState({});
 
   useEffect(() => {
-    const fetchQuestions = async () => {
+    const fetchData = async () => {
       try {
-        const [questionsRes, chaptersRes] = await Promise.all([
+        const [questionsRes, chaptersRes, providersRes] = await Promise.all([
           axios.get(`${API}/questions/${chapter}?limit=10`),
-          axios.get(`${API}/chapters`)
+          axios.get(`${API}/chapters`),
+          axios.get(`${API}/ai/providers`)
         ]);
         setQuestions(questionsRes.data);
         setChapterInfo(chaptersRes.data.find(c => c.id === parseInt(chapter)));
+        setAiProviders(providersRes.data);
+        
+        // Load saved AI settings
+        const savedProvider = localStorage.getItem("ai_provider");
+        const savedModel = localStorage.getItem("ai_model");
+        if (savedProvider) setSelectedProvider(savedProvider);
+        if (savedModel) setSelectedModel(savedModel);
+        
+        // Load saved API keys
+        if (savedProvider) {
+          const savedKey = localStorage.getItem(`ai_key_${savedProvider}`);
+          if (savedKey) setApiKey(savedKey);
+        }
       } catch (error) {
-        toast.error(language === "de" ? "Fehler beim Laden" : "Failed to load questions");
+        toast.error(language === "de" ? "Fehler beim Laden" : "Failed to load data");
       } finally {
         setLoading(false);
       }
     };
-    fetchQuestions();
+    fetchData();
   }, [chapter, language]);
+
+  // Update API key when provider changes
+  useEffect(() => {
+    if (selectedProvider) {
+      const savedKey = localStorage.getItem(`ai_key_${selectedProvider}`);
+      setApiKey(savedKey || "");
+      
+      // Set default model for provider
+      const provider = aiProviders.find(p => p.id === selectedProvider);
+      if (provider && !selectedModel) {
+        setSelectedModel(provider.default_model);
+      }
+    }
+  }, [selectedProvider, aiProviders]);
 
   const currentQuestion = questions[currentIndex];
   const progress = ((currentIndex + 1) / questions.length) * 100;
@@ -57,7 +112,6 @@ export default function Quiz() {
 
     setSubmitting(true);
     
-    // Calculate results locally
     let correct = 0;
     const resultsList = [];
     
@@ -87,9 +141,8 @@ export default function Quiz() {
       completed_at: new Date().toISOString()
     };
     
-    // Update local progress
     const savedProgress = localStorage.getItem("linux_progress");
-    const progress = savedProgress ? JSON.parse(savedProgress) : {
+    const progressData = savedProgress ? JSON.parse(savedProgress) : {
       total_quizzes: 0,
       total_correct: 0,
       total_questions: 0,
@@ -97,15 +150,15 @@ export default function Quiz() {
       quiz_history: []
     };
     
-    progress.total_quizzes += 1;
-    progress.total_correct += correct;
-    progress.total_questions += total;
-    if (percentage >= 70 && !progress.chapters_completed.includes(parseInt(chapter))) {
-      progress.chapters_completed.push(parseInt(chapter));
+    progressData.total_quizzes += 1;
+    progressData.total_correct += correct;
+    progressData.total_questions += total;
+    if (percentage >= 70 && !progressData.chapters_completed.includes(parseInt(chapter))) {
+      progressData.chapters_completed.push(parseInt(chapter));
     }
-    progress.quiz_history = [quizResult, ...(progress.quiz_history || [])].slice(0, 10);
+    progressData.quiz_history = [quizResult, ...(progressData.quiz_history || [])].slice(0, 10);
     
-    localStorage.setItem("linux_progress", JSON.stringify(progress));
+    localStorage.setItem("linux_progress", JSON.stringify(progressData));
     
     setResults(quizResult);
     setShowResults(true);
@@ -121,8 +174,60 @@ export default function Quiz() {
     setShowResults(false);
     setResults(null);
     setCurrentIndex(0);
+    setAiExplanations({});
     window.location.reload();
   };
+
+  const saveAiSettings = () => {
+    if (selectedProvider) {
+      localStorage.setItem("ai_provider", selectedProvider);
+      if (selectedModel) {
+        localStorage.setItem("ai_model", selectedModel);
+      }
+      if (saveApiKey && apiKey) {
+        localStorage.setItem(`ai_key_${selectedProvider}`, apiKey);
+      }
+    }
+    setShowAiSettings(false);
+    toast.success(language === "de" ? "KI-Einstellungen gespeichert" : "AI settings saved");
+  };
+
+  const getAiExplanation = async (questionId) => {
+    if (!selectedProvider || !apiKey) {
+      setShowAiSettings(true);
+      return;
+    }
+
+    const question = questions.find(q => q.id === questionId);
+    if (!question) return;
+
+    setLoadingExplanation(prev => ({ ...prev, [questionId]: true }));
+
+    try {
+      const response = await axios.post(`${API}/ai/explain`, {
+        question: question.question,
+        options: question.options,
+        correct_answer: question.correct_answer,
+        user_answer: selectedAnswers[questionId],
+        provider: selectedProvider,
+        api_key: apiKey,
+        model: selectedModel || undefined,
+        language: language
+      });
+
+      if (response.data.success) {
+        setAiExplanations(prev => ({ ...prev, [questionId]: response.data.explanation }));
+      } else {
+        toast.error(response.data.error || (language === "de" ? "KI-Fehler" : "AI error"));
+      }
+    } catch (error) {
+      toast.error(language === "de" ? "Fehler bei der KI-Anfrage" : "AI request failed");
+    } finally {
+      setLoadingExplanation(prev => ({ ...prev, [questionId]: false }));
+    }
+  };
+
+  const isAiConfigured = selectedProvider && apiKey;
 
   if (loading) {
     return (
@@ -174,6 +279,19 @@ export default function Quiz() {
             </p>
           </div>
 
+          {/* AI Settings Button */}
+          <div className="flex justify-end mb-4">
+            <Button 
+              onClick={() => setShowAiSettings(true)} 
+              variant="outline"
+              className="border-purple-500/30 text-purple-400 hover:bg-purple-500/10"
+              data-testid="ai-settings-btn"
+            >
+              <Settings className="w-4 h-4 mr-2" />
+              {language === "de" ? "KI-Einstellungen" : "AI Settings"}
+            </Button>
+          </div>
+
           {/* Answer Review */}
           <div className="space-y-4 mb-8">
             <h2 className="text-xl font-bold text-white">{language === "de" ? "Antworten überprüfen" : "Review Answers"}</h2>
@@ -212,11 +330,45 @@ export default function Quiz() {
                         )}
                       </div>
                       
+                      {/* Static Explanation */}
                       {result.explanation && (
                         <div className="mt-3 p-3 bg-zinc-800/50 rounded-lg">
                           <p className="text-xs text-zinc-500 uppercase mb-1">{t("explanation")}</p>
                           <p className="text-sm text-zinc-300">{result.explanation}</p>
                         </div>
+                      )}
+
+                      {/* AI Explanation */}
+                      {aiExplanations[result.question_id] ? (
+                        <div className="mt-3 p-3 bg-purple-900/20 border border-purple-500/30 rounded-lg">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Sparkles className="w-4 h-4 text-purple-400" />
+                            <p className="text-xs text-purple-400 uppercase font-semibold">
+                              {language === "de" ? "KI-Erklärung" : "AI Explanation"}
+                            </p>
+                          </div>
+                          <p className="text-sm text-zinc-300 whitespace-pre-wrap">{aiExplanations[result.question_id]}</p>
+                        </div>
+                      ) : (
+                        <Button
+                          onClick={() => getAiExplanation(result.question_id)}
+                          disabled={loadingExplanation[result.question_id]}
+                          className="mt-3 bg-purple-600 hover:bg-purple-700 text-white"
+                          size="sm"
+                          data-testid={`ai-explain-btn-${idx}`}
+                        >
+                          {loadingExplanation[result.question_id] ? (
+                            <>
+                              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                              {language === "de" ? "Lädt..." : "Loading..."}
+                            </>
+                          ) : (
+                            <>
+                              <Sparkles className="w-4 h-4 mr-2" />
+                              {language === "de" ? "KI-Erklärung anfordern" : "Get AI Explanation"}
+                            </>
+                          )}
+                        </Button>
                       )}
                     </div>
                   </div>
@@ -237,6 +389,105 @@ export default function Quiz() {
             </Button>
           </div>
         </div>
+
+        {/* AI Settings Dialog */}
+        <Dialog open={showAiSettings} onOpenChange={setShowAiSettings}>
+          <DialogContent className="bg-zinc-900 border-zinc-800 text-white max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-purple-400" />
+                {language === "de" ? "KI-Einstellungen" : "AI Settings"}
+              </DialogTitle>
+              <DialogDescription className="text-zinc-400">
+                {language === "de" 
+                  ? "Konfiguriere deinen KI-Anbieter für detaillierte Erklärungen."
+                  : "Configure your AI provider for detailed explanations."}
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="space-y-4 mt-4">
+              {/* Provider Selection */}
+              <div className="space-y-2">
+                <Label className="text-zinc-300">
+                  {language === "de" ? "KI-Anbieter" : "AI Provider"}
+                </Label>
+                <Select value={selectedProvider} onValueChange={setSelectedProvider}>
+                  <SelectTrigger className="bg-zinc-800 border-zinc-700 text-white">
+                    <SelectValue placeholder={language === "de" ? "Anbieter wählen..." : "Select provider..."} />
+                  </SelectTrigger>
+                  <SelectContent className="bg-zinc-800 border-zinc-700">
+                    {aiProviders.map(provider => (
+                      <SelectItem key={provider.id} value={provider.id} className="text-white hover:bg-zinc-700">
+                        {provider.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Model Selection */}
+              {selectedProvider && (
+                <div className="space-y-2">
+                  <Label className="text-zinc-300">
+                    {language === "de" ? "Modell" : "Model"}
+                  </Label>
+                  <Select value={selectedModel} onValueChange={setSelectedModel}>
+                    <SelectTrigger className="bg-zinc-800 border-zinc-700 text-white">
+                      <SelectValue placeholder={language === "de" ? "Modell wählen..." : "Select model..."} />
+                    </SelectTrigger>
+                    <SelectContent className="bg-zinc-800 border-zinc-700">
+                      {aiProviders.find(p => p.id === selectedProvider)?.models.map(model => (
+                        <SelectItem key={model} value={model} className="text-white hover:bg-zinc-700">
+                          {model}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
+              {/* API Key */}
+              <div className="space-y-2">
+                <Label className="text-zinc-300 flex items-center gap-2">
+                  <Key className="w-4 h-4" />
+                  {language === "de" ? "API-Schlüssel" : "API Key"}
+                </Label>
+                <Input
+                  type="password"
+                  value={apiKey}
+                  onChange={(e) => setApiKey(e.target.value)}
+                  placeholder={language === "de" ? "Dein API-Schlüssel..." : "Your API key..."}
+                  className="bg-zinc-800 border-zinc-700 text-white"
+                />
+                <p className="text-xs text-zinc-500">
+                  {language === "de" 
+                    ? "Dein Schlüssel wird nur lokal gespeichert."
+                    : "Your key is stored locally only."}
+                </p>
+              </div>
+
+              {/* Save Key Toggle */}
+              <div className="flex items-center justify-between">
+                <Label className="text-zinc-300 text-sm">
+                  {language === "de" ? "API-Schlüssel speichern" : "Save API key"}
+                </Label>
+                <Switch
+                  checked={saveApiKey}
+                  onCheckedChange={setSaveApiKey}
+                />
+              </div>
+
+              {/* Save Button */}
+              <Button 
+                onClick={saveAiSettings}
+                className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+                disabled={!selectedProvider}
+              >
+                {language === "de" ? "Speichern" : "Save"}
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     );
   }
