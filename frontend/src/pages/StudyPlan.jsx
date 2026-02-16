@@ -20,15 +20,15 @@ export default function StudyPlan() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const token = localStorage.getItem("token");
       try {
-        const [planRes, progressRes] = await Promise.all([
-          axios.get(`${API}/studyplan`),
-          axios.get(`${API}/progress`, { headers: { Authorization: `Bearer ${token}` } })
-        ]);
+        const planRes = await axios.get(`${API}/studyplan`);
         setStudyPlan(planRes.data);
-        setProgress(progressRes.data);
-        setExpandedWeek(progressRes.data?.current_week || 1);
+        
+        // Load progress from localStorage
+        const savedProgress = localStorage.getItem("linux_progress");
+        const localProgress = savedProgress ? JSON.parse(savedProgress) : { current_week: 1 };
+        setProgress(localProgress);
+        setExpandedWeek(localProgress.current_week || 1);
       } catch (error) {
         console.error(error);
       } finally {
