@@ -11,26 +11,33 @@ import {
 import axios from "axios";
 
 export default function Dashboard() {
-  const { t, language, setLanguage, user, logout } = useApp();
+  const { t, language, setLanguage } = useApp();
   const navigate = useNavigate();
   const [chapters, setChapters] = useState([]);
-  const [progress, setProgress] = useState(null);
+  const [progress, setProgress] = useState({
+    total_quizzes: 0,
+    total_correct: 0,
+    total_questions: 0,
+    chapters_completed: [],
+    current_week: 1,
+    streak_days: 0,
+    flashcards_reviewed: 0,
+    quiz_history: []
+  });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        setLoading(false);
-        return;
-      }
       try {
-        const [chaptersRes, progressRes] = await Promise.all([
-          axios.get(`${API}/chapters`),
-          axios.get(`${API}/progress`, { headers: { Authorization: `Bearer ${token}` } })
-        ]);
+        // Load chapters
+        const chaptersRes = await axios.get(`${API}/chapters`);
         setChapters(chaptersRes.data);
-        setProgress(progressRes.data);
+        
+        // Load progress from localStorage
+        const savedProgress = localStorage.getItem("linux_progress");
+        if (savedProgress) {
+          setProgress(JSON.parse(savedProgress));
+        }
       } catch (error) {
         console.error("Dashboard fetch error:", error);
       } finally {
