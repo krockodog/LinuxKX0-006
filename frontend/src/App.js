@@ -7,7 +7,6 @@ import { toast } from "sonner";
 
 // Pages
 import Landing from "./pages/Landing";
-import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import Quiz from "./pages/Quiz";
 import Flashcards from "./pages/Flashcards";
