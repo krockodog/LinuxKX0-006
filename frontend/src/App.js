@@ -144,6 +144,12 @@ export const translations = {
     welcome: "Willkommen zurück",
     hero1: "CompTIA Linux+ XK0-006 Prüfung bestehen",
     hero2: "Umfassende Lernplattform mit 150+ Übungsfragen, Lernkarten und einem strukturierten 20-Wochen-Lernplan.",
+    aiExplanation: "KI-Erklärung",
+    aiSettings: "KI-Einstellungen",
+    getAiExplanation: "KI-Erklärung anfordern",
+    aiProvider: "KI-Anbieter",
+    apiKey: "API-Schlüssel",
+    saveApiKey: "API-Schlüssel speichern",
   }
 };
 
