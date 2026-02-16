@@ -105,7 +105,7 @@ export default function Dashboard() {
         {/* Welcome */}
         <div className="mb-8 animate-fadeIn">
           <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">
-            {t("welcome")}, <span className="gradient-text">{user?.name}</span>
+            <span className="gradient-text">Linux+ Mastery</span>
           </h1>
           <p className="text-zinc-400">CompTIA Linux+ XK0-006 • {language === "de" ? "Prüfungsvorbereitung" : "Exam Preparation"}</p>
         </div>
