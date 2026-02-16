@@ -110,7 +110,6 @@ Build a complete learning app from a CompTIA Linux+ XK0-006 exam preparation PDF
 - [ ] Add more questions (currently 100, PDF has 150+)
 
 ### P2 (Medium Priority)
-- [ ] Spaced repetition algorithm for flashcards
 - [ ] User achievements/badges system
 - [ ] Export progress reports (PDF/CSV)
 
