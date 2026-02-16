@@ -253,7 +253,7 @@ export default function Quiz() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0a0a0b] flex items-center justify-center">
+      <div className="min-h-screen bg-transparent flex items-center justify-center">
         <div className="animate-spin w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full"></div>
       </div>
     );
@@ -264,7 +264,7 @@ export default function Quiz() {
     const passed = results.percentage >= 70;
     
     return (
-      <div className="min-h-screen bg-[#0a0a0b] py-8 px-6" data-testid="quiz-results">
+      <div className="min-h-screen bg-transparent py-8 px-6" data-testid="quiz-results">
         <div className="max-w-3xl mx-auto">
           {/* Header */}
           <div className="text-center mb-8 animate-scaleIn">
@@ -520,7 +520,7 @@ export default function Quiz() {
 
   // Quiz Screen
   return (
-    <div className="min-h-screen bg-[#0a0a0b] py-8 px-6" data-testid="quiz-page">
+    <div className="min-h-screen bg-transparent py-8 px-6" data-testid="quiz-page">
       <div className="max-w-3xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">

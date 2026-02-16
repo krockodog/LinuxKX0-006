@@ -161,7 +161,7 @@ export default function ExamSimulation() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0a0a0b] flex items-center justify-center">
+      <div className="min-h-screen bg-transparent flex items-center justify-center">
         <div className="animate-spin w-8 h-8 border-2 border-[#00ff41] border-t-transparent rounded-full"></div>
       </div>
     );
@@ -170,7 +170,7 @@ export default function ExamSimulation() {
   // Start Screen
   if (!examStarted) {
     return (
-      <div className="min-h-screen bg-[#0a0a0b] py-8 px-6" data-testid="exam-start">
+      <div className="min-h-screen bg-transparent py-8 px-6" data-testid="exam-start">
         <div className="max-w-2xl mx-auto">
           <button 
             onClick={() => navigate("/dashboard")}
@@ -248,7 +248,7 @@ export default function ExamSimulation() {
     const passed = results.passed;
     
     return (
-      <div className="min-h-screen bg-[#0a0a0b] py-8 px-6" data-testid="exam-results">
+      <div className="min-h-screen bg-transparent py-8 px-6" data-testid="exam-results">
         <div className="max-w-3xl mx-auto">
           <div className="text-center mb-8 animate-scaleIn">
             <div className={`w-24 h-24 rounded-full mx-auto mb-4 flex items-center justify-center ${passed ? 'bg-emerald-500/20' : 'bg-red-500/20'}`}>
@@ -337,10 +337,10 @@ export default function ExamSimulation() {
 
   // Exam Screen
   return (
-    <div className="min-h-screen bg-[#0a0a0b] py-4 px-6" data-testid="exam-page">
+    <div className="min-h-screen bg-transparent py-4 px-6" data-testid="exam-page">
       <div className="max-w-4xl mx-auto">
         {/* Timer Bar */}
-        <div className="sticky top-0 z-50 bg-[#0a0a0b]/95 backdrop-blur py-4 mb-6">
+        <div className="sticky top-0 z-50 bg-transparent/95 backdrop-blur py-4 mb-6">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-4">
               <div className={`flex items-center gap-2 px-4 py-2 rounded-lg font-mono text-lg ${

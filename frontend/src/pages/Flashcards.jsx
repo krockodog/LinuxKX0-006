@@ -180,7 +180,7 @@ export default function Flashcards() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0a0a0b] flex items-center justify-center">
+      <div className="min-h-screen bg-transparent flex items-center justify-center">
         <div className="animate-spin w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full"></div>
       </div>
     );
@@ -190,7 +190,7 @@ export default function Flashcards() {
   const cardStatus = currentCard ? getCardDueStatus(currentCard, srData) : 'new';
 
   return (
-    <div className="min-h-screen bg-[#0a0a0b] py-8 px-6" data-testid="flashcards-page">
+    <div className="min-h-screen bg-transparent py-8 px-6" data-testid="flashcards-page">
       <div className="max-w-3xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
