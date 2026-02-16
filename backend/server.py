@@ -443,9 +443,218 @@ async def update_week(week: int, user = Depends(get_current_user)):
 async def get_study_plan():
     return STUDY_PLAN
 
+# ============ AI EXPLANATION ROUTES ============
+
+# AI Provider configurations
+AI_PROVIDERS = {
+    "openai": {
+        "name": "OpenAI (GPT)",
+        "base_url": "https://api.openai.com/v1",
+        "default_model": "gpt-4o",
+        "models": ["gpt-4o", "gpt-4o-mini", "gpt-4-turbo"]
+    },
+    "gemini": {
+        "name": "Google Gemini",
+        "base_url": "https://generativelanguage.googleapis.com/v1beta/openai",
+        "default_model": "gemini-2.0-flash",
+        "models": ["gemini-2.0-flash", "gemini-1.5-pro", "gemini-1.5-flash"]
+    },
+    "anthropic": {
+        "name": "Anthropic Claude",
+        "base_url": "https://api.anthropic.com/v1",
+        "default_model": "claude-3-5-sonnet-20241022",
+        "models": ["claude-3-5-sonnet-20241022", "claude-3-haiku-20240307"]
+    },
+    "deepseek": {
+        "name": "DeepSeek",
+        "base_url": "https://api.deepseek.com",
+        "default_model": "deepseek-chat",
+        "models": ["deepseek-chat", "deepseek-coder"]
+    },
+    "qwen": {
+        "name": "Qwen (Alibaba)",
+        "base_url": "https://dashscope-intl.aliyuncs.com/compatible-mode/v1",
+        "default_model": "qwen-max",
+        "models": ["qwen-max", "qwen-plus", "qwen-turbo"]
+    },
+    "perplexity": {
+        "name": "Perplexity",
+        "base_url": "https://api.perplexity.ai",
+        "default_model": "sonar-pro",
+        "models": ["sonar-pro", "sonar"]
+    }
+}
+
+class AIExplanationRequest(BaseModel):
+    question: str
+    options: List[str]
+    correct_answer: int
+    user_answer: Optional[int] = None
+    provider: str
+    api_key: str
+    model: Optional[str] = None
+    language: str = "en"
+
+class AIExplanationResponse(BaseModel):
+    explanation: str
+    provider: str
+    model: str
+    success: bool
+    error: Optional[str] = None
+
+@api_router.get("/ai/providers")
+async def get_ai_providers():
+    """Get list of available AI providers"""
+    return [
+        {
+            "id": provider_id,
+            "name": config["name"],
+            "models": config["models"],
+            "default_model": config["default_model"]
+        }
+        for provider_id, config in AI_PROVIDERS.items()
+    ]
+
+@api_router.post("/ai/explain", response_model=AIExplanationResponse)
+async def get_ai_explanation(request: AIExplanationRequest):
+    """Get AI-powered explanation for a question"""
+    
+    if request.provider not in AI_PROVIDERS:
+        raise HTTPException(status_code=400, detail=f"Unknown provider: {request.provider}")
+    
+    provider_config = AI_PROVIDERS[request.provider]
+    model = request.model or provider_config["default_model"]
+    
+    # Build the prompt
+    lang_instruction = "Antworte auf Deutsch." if request.language == "de" else "Answer in English."
+    
+    options_text = "\n".join([f"{chr(65+i)}. {opt}" for i, opt in enumerate(request.options)])
+    correct_letter = chr(65 + request.correct_answer)
+    
+    user_answer_text = ""
+    if request.user_answer is not None:
+        user_letter = chr(65 + request.user_answer)
+        if request.user_answer != request.correct_answer:
+            user_answer_text = f"\n\nThe user selected: {user_letter} (incorrect)"
+    
+    system_prompt = f"""You are a Linux expert helping students prepare for the CompTIA Linux+ XK0-006 exam.
+Provide clear, concise explanations for exam questions.
+Focus on WHY the correct answer is right and explain the relevant Linux concepts.
+{lang_instruction}"""
+
+    user_prompt = f"""Explain this Linux+ exam question:
+
+Question: {request.question}
+
+Options:
+{options_text}
+
+Correct Answer: {correct_letter}{user_answer_text}
+
+Provide a clear explanation of why {correct_letter} is correct. Include relevant Linux commands or concepts that help understand the topic."""
+
+    try:
+        # Handle Anthropic differently (uses messages API with different format)
+        if request.provider == "anthropic":
+            async with httpx.AsyncClient(timeout=60.0) as client:
+                response = await client.post(
+                    f"{provider_config['base_url']}/messages",
+                    headers={
+                        "x-api-key": request.api_key,
+                        "anthropic-version": "2023-06-01",
+                        "Content-Type": "application/json"
+                    },
+                    json={
+                        "model": model,
+                        "max_tokens": 1024,
+                        "system": system_prompt,
+                        "messages": [{"role": "user", "content": user_prompt}]
+                    }
+                )
+                
+                if response.status_code != 200:
+                    error_detail = response.text
+                    return AIExplanationResponse(
+                        explanation="",
+                        provider=request.provider,
+                        model=model,
+                        success=False,
+                        error=f"API error ({response.status_code}): {error_detail}"
+                    )
+                
+                data = response.json()
+                explanation = data["content"][0]["text"]
+                
+        else:
+            # OpenAI-compatible API (OpenAI, Gemini, DeepSeek, Qwen, Perplexity)
+            async with httpx.AsyncClient(timeout=60.0) as client:
+                headers = {
+                    "Authorization": f"Bearer {request.api_key}",
+                    "Content-Type": "application/json"
+                }
+                
+                # Gemini uses different header
+                if request.provider == "gemini":
+                    headers = {
+                        "x-goog-api-key": request.api_key,
+                        "Content-Type": "application/json"
+                    }
+                
+                response = await client.post(
+                    f"{provider_config['base_url']}/chat/completions",
+                    headers=headers,
+                    json={
+                        "model": model,
+                        "messages": [
+                            {"role": "system", "content": system_prompt},
+                            {"role": "user", "content": user_prompt}
+                        ],
+                        "max_tokens": 1024,
+                        "temperature": 0.7
+                    }
+                )
+                
+                if response.status_code != 200:
+                    error_detail = response.text
+                    return AIExplanationResponse(
+                        explanation="",
+                        provider=request.provider,
+                        model=model,
+                        success=False,
+                        error=f"API error ({response.status_code}): {error_detail}"
+                    )
+                
+                data = response.json()
+                explanation = data["choices"][0]["message"]["content"]
+        
+        return AIExplanationResponse(
+            explanation=explanation,
+            provider=request.provider,
+            model=model,
+            success=True
+        )
+        
+    except httpx.TimeoutException:
+        return AIExplanationResponse(
+            explanation="",
+            provider=request.provider,
+            model=model,
+            success=False,
+            error="Request timed out. Please try again."
+        )
+    except Exception as e:
+        logger.error(f"AI explanation error: {str(e)}")
+        return AIExplanationResponse(
+            explanation="",
+            provider=request.provider,
+            model=model,
+            success=False,
+            error=str(e)
+        )
+
 @api_router.get("/")
 async def root():
-    return {"message": "Linux+ Learning App API", "version": "1.0"}
+    return {"message": "Linux+ Learning App API", "version": "2.0", "features": ["quiz", "flashcards", "ai-explanations"]}
 
 # Include router and middleware
 app.include_router(api_router)
