@@ -4,21 +4,21 @@ import { Button } from "@/components/ui/button";
 import { Terminal, BookOpen, BarChart3, Calendar, ChevronRight, Cpu } from "lucide-react";
 
 export default function Landing() {
-  const { t, language, setLanguage } = useApp();
+  const { t, language, setLanguage, username } = useApp();
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-[#0a0a0b] relative overflow-hidden">
-      {/* Background grid */}
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(16,185,129,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(16,185,129,0.03)_1px,transparent_1px)] bg-[size:50px_50px]"></div>
+    <div className="min-h-screen bg-transparent relative overflow-hidden">
+      {/* Background grid with matrix effect */}
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(0,255,65,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,65,0.03)_1px,transparent_1px)] bg-[size:50px_50px]"></div>
       
       {/* Header */}
       <header className="relative z-10 flex items-center justify-between px-6 py-4 max-w-7xl mx-auto">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-500 to-cyan-500 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#00ff41] to-[#008f11] flex items-center justify-center">
             <Terminal className="w-6 h-6 text-black" />
           </div>
-          <span className="text-xl font-bold font-mono gradient-text">Linux+</span>
+          <span className="text-xl font-bold font-mono text-[#00ff41]">Linux+</span>
         </div>
         
         <div className="flex items-center gap-4">
@@ -38,9 +38,15 @@ export default function Landing() {
             </button>
           </div>
           
+          {username && (
+            <span className="text-sm font-mono text-[#00ff41] hidden sm:block">
+              {username}
+            </span>
+          )}
+          
           <Button 
             onClick={() => navigate("/dashboard")}
-            className="btn-primary text-black font-semibold px-6"
+            className="bg-gradient-to-r from-[#00ff41] to-[#008f11] text-black font-semibold px-6 hover:shadow-[0_0_20px_rgba(0,255,65,0.4)]"
             data-testid="login-btn"
           >
             {t("getStarted")}
