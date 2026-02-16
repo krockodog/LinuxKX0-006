@@ -172,6 +172,7 @@ function AppContent() {
       <Route path="/flashcards" element={<Flashcards />} />
       <Route path="/flashcards/:chapter" element={<Flashcards />} />
       <Route path="/studyplan" element={<StudyPlan />} />
+      <Route path="/exam" element={<ExamSimulation />} />
     </Routes>
   );
 }
