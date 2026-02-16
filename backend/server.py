@@ -290,7 +290,7 @@ FLASHCARDS = [
     {"id": "f28", "chapter": 5, "front": "What is inode exhaustion?", "back": "When a filesystem runs out of inodes (metadata structures), preventing new file creation even with free disk space.", "category": "Troubleshooting"},
     {"id": "f29", "chapter": 5, "front": "What does the 'D' state mean in process status?", "back": "Uninterruptible sleep - usually indicates the process is waiting for I/O (disk/network). Too many D-state processes indicates I/O bottleneck.", "category": "Performance"},
     {"id": "f30", "chapter": 5, "front": "What is fsck?", "back": "File System Consistency Check - repairs filesystem corruption, typically run on unmounted filesystems after crashes.", "category": "Troubleshooting"},
-]
+] + EXTENDED_FLASHCARDS  # Add extended flashcards from questions_extended.py
 
 # 20-Week Study Plan
 STUDY_PLAN = [
