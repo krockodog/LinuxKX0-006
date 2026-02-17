@@ -1,426 +1,279 @@
-# Linux+ Mastery 🐧
+# CompTIA Linux+ XK0-006 Lern-App 🐧
 
-**Vollständige Lern-App für die CompTIA Linux+ XK0-006 Zertifizierungsprüfung (2025-2027)**
+**Prüfungsvorbereitung für CompTIA Linux+ XK0-006 (2025-2027)**
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![Version](https://img.shields.io/badge/version-2.0.0-green.svg)
+![Version](https://img.shields.io/badge/version-2.1.0-green.svg)
 ![Platform](https://img.shields.io/badge/platform-Web%20%7C%20Windows-lightgrey.svg)
 ![Language](https://img.shields.io/badge/language-DE%20%7C%20EN-orange.svg)
 
-<p align="center">
-  <img src="docs/screenshot-landing.png" alt="Linux+ Mastery Landing Page" width="800">
-</p>
+---
+
+## 🚀 Schnellstart (5 Minuten)
+
+### Voraussetzungen
+
+- **Node.js 18+** → [nodejs.org](https://nodejs.org/) (LTS Version)
+- **Python 3.9+** → [python.org](https://python.org/)
+- **Git** → [git-scm.com](https://git-scm.com/)
+
+### Installation
+
+```bash
+# 1. Repository klonen
+git clone https://github.com/krockodog/LinuxKX0-006.git
+cd LinuxKX0-006
+
+# 2. Backend starten
+cd backend
+python -m venv venv
+# Windows:
+venv\Scripts\activate
+# Linux/Mac:
+source venv/bin/activate
+
+pip install -r requirements.txt
+copy .env.example .env      # Windows
+# cp .env.example .env      # Linux/Mac
+
+python -m uvicorn server:app --host 0.0.0.0 --port 8001
+
+# 3. Neues Terminal öffnen - Frontend starten
+cd LinuxKX0-006/frontend
+npm install -g yarn         # Falls noch nicht installiert
+yarn install
+copy .env.example .env      # Windows
+# cp .env.example .env      # Linux/Mac
+
+# In .env ändern:
+# REACT_APP_BACKEND_URL=http://localhost:8001
+
+yarn start
+```
+
+**Fertig!** Öffne http://localhost:3000 im Browser.
 
 ---
 
-## 📋 Inhaltsverzeichnis
+## 📦 Windows Komplett-Anleitung
 
-- [Features](#-features)
-- [Screenshots](#-screenshots)
-- [Schnellstart](#-schnellstart)
-- [Installation](#-installation)
-  - [Option 1: Web-App (Entwicklung)](#option-1-web-app-entwicklung)
-  - [Option 2: Windows Desktop-App](#option-2-windows-desktop-app)
-  - [Option 3: Docker](#option-3-docker)
-- [KI-Erklärungen einrichten](#-ki-erklärungen-einrichten)
-- [Projektstruktur](#-projektstruktur)
-- [API-Dokumentation](#-api-dokumentation)
-- [Mitwirken](#-mitwirken)
-- [Lizenz](#-lizenz)
+### Schritt 1: Software installieren
+
+1. **Node.js installieren**
+   - Gehe zu https://nodejs.org/
+   - Lade "LTS" Version herunter (z.B. 20.x.x)
+   - Installieren → alle Häkchen anlassen
+
+2. **Python installieren**
+   - Gehe zu https://python.org/downloads/
+   - Lade neueste Version herunter
+   - **WICHTIG:** Bei Installation "Add Python to PATH" aktivieren ✅
+
+3. **Git installieren**
+   - Gehe zu https://git-scm.com/download/win
+   - Installieren mit Standardeinstellungen
+
+### Schritt 2: Projekt herunterladen
+
+Öffne **PowerShell** oder **CMD** und führe aus:
+
+```powershell
+cd C:\Users\DEIN_NAME\Desktop
+git clone https://github.com/krockodog/LinuxKX0-006.git
+cd LinuxKX0-006
+```
+
+### Schritt 3: Backend einrichten
+
+```powershell
+cd backend
+
+# Virtuelle Umgebung erstellen
+python -m venv venv
+
+# Aktivieren
+venv\Scripts\activate
+
+# Abhängigkeiten installieren
+pip install -r requirements.txt
+
+# Konfiguration erstellen
+copy .env.example .env
+```
+
+### Schritt 4: Frontend einrichten
+
+Öffne ein **neues** PowerShell-Fenster:
+
+```powershell
+cd C:\Users\DEIN_NAME\Desktop\LinuxKX0-006\frontend
+
+# Yarn installieren (falls nicht vorhanden)
+npm install -g yarn
+
+# Abhängigkeiten installieren
+yarn install
+
+# Konfiguration erstellen
+copy .env.example .env
+
+# .env bearbeiten - öffne die Datei und ändere:
+notepad .env
+```
+
+In der `.env` Datei ändern:
+```
+REACT_APP_BACKEND_URL=http://localhost:8001
+```
+
+### Schritt 5: App starten
+
+**Terminal 1 - Backend:**
+```powershell
+cd C:\Users\DEIN_NAME\Desktop\LinuxKX0-006\backend
+venv\Scripts\activate
+python -m uvicorn server:app --host 0.0.0.0 --port 8001
+```
+
+**Terminal 2 - Frontend:**
+```powershell
+cd C:\Users\DEIN_NAME\Desktop\LinuxKX0-006\frontend
+yarn start
+```
+
+Browser öffnet automatisch: **http://localhost:3000**
+
+---
+
+## 🍎 macOS Anleitung
+
+```bash
+# Homebrew installieren (falls nicht vorhanden)
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+# Abhängigkeiten
+brew install node python git
+npm install -g yarn
+
+# Projekt klonen
+git clone https://github.com/krockodog/LinuxKX0-006.git
+cd LinuxKX0-006
+
+# Backend
+cd backend
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env
+python -m uvicorn server:app --host 0.0.0.0 --port 8001 &
+
+# Frontend (neues Terminal)
+cd ../frontend
+yarn install
+cp .env.example .env
+# In .env: REACT_APP_BACKEND_URL=http://localhost:8001
+yarn start
+```
+
+---
+
+## 🐧 Linux Anleitung (Ubuntu/Debian)
+
+```bash
+# Abhängigkeiten
+sudo apt update
+sudo apt install -y nodejs npm python3 python3-venv python3-pip git
+sudo npm install -g yarn
+
+# Projekt klonen
+git clone https://github.com/krockodog/LinuxKX0-006.git
+cd LinuxKX0-006
+
+# Backend
+cd backend
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env
+python -m uvicorn server:app --host 0.0.0.0 --port 8001 &
+
+# Frontend (neues Terminal)
+cd ../frontend
+yarn install
+cp .env.example .env
+nano .env  # REACT_APP_BACKEND_URL=http://localhost:8001 setzen
+yarn start
+```
 
 ---
 
 ## ✨ Features
 
-### Lernmodi
-
-| Feature | Beschreibung |
-|---------|--------------|
-| **Quiz-Modus** | 100+ realistische Multiple-Choice-Fragen in 5 Kapiteln |
-| **Prüfungssimulation** | 90-Minuten-Timer mit 60 Fragen - wie die echte Prüfung |
-| **Lernkarten** | Interaktive Karteikarten mit Spaced Repetition Algorithmus |
-| **20-Wochen-Plan** | Strukturierter Lernplan für die Prüfungsvorbereitung |
-
-### Besonderheiten
-
-- **Matrix-Design** - Animierter Hintergrund im Hacker-Style
-- **Zweisprachig** - Komplett in Deutsch und Englisch
-- **Kein Login** - Sofort loslegen, Fortschritt wird lokal gespeichert
-- **KI-Erklärungen** - Detaillierte Erklärungen von 6 KI-Anbietern
-- **Offline-fähig** - Desktop-App funktioniert ohne Internet
-- **Spaced Repetition** - Intelligentes Wiederholungssystem für Lernkarten
-
-### Kapitelübersicht
-
-| # | Kapitel | Themen | Gewichtung |
-|---|---------|--------|------------|
-| 1 | Linux-Systemgrundlagen | Boot-Prozess, LVM, RAID, Virtualisierung | 23% |
-| 2 | Dienste & Benutzerverwaltung | Systemd, Berechtigungen, Container | 20% |
-| 3 | Sicherheitshärtung | PAM, Firewalls, SELinux, Verschlüsselung | 18% |
-| 4 | Automatisierung & DevOps | Ansible, Scripting, Git, CI/CD | 17% |
-| 5 | Fehlerbehebung & Leistung | Monitoring, Diagnose, Optimierung | 22% |
+- **100+ Prüfungsfragen** in 5 Kapiteln
+- **Prüfungssimulation** mit 90-Minuten-Timer (60 Fragen)
+- **Lernkarten** mit Spaced Repetition Algorithmus
+- **20-Wochen-Lernplan**
+- **KI-Erklärungen** (OpenAI, Gemini, Claude, DeepSeek, Qwen, Perplexity)
+- **Zweisprachig** (Deutsch/Englisch)
+- **Matrix-Hintergrund** Animation
+- **Kein Login erforderlich**
 
 ---
 
-## 📸 Screenshots
+## 🔧 Fehlerbehebung
 
-<details>
-<summary>Landing Page mit Matrix-Hintergrund</summary>
-<img src="docs/screenshot-landing.png" alt="Landing Page" width="800">
-</details>
+### "Python nicht gefunden"
+→ Python neu installieren mit "Add to PATH" ✅
 
-<details>
-<summary>Dashboard mit Fortschrittsanzeige</summary>
-<img src="docs/screenshot-dashboard.png" alt="Dashboard" width="800">
-</details>
-
-<details>
-<summary>Prüfungssimulation (90 Minuten)</summary>
-<img src="docs/screenshot-exam.png" alt="Exam Simulation" width="800">
-</details>
-
-<details>
-<summary>Lernkarten mit Spaced Repetition</summary>
-<img src="docs/screenshot-flashcards.png" alt="Flashcards" width="800">
-</details>
-
----
-
-## 🚀 Schnellstart
-
-### Voraussetzungen
-
-- **Node.js** 18+ ([Download](https://nodejs.org/))
-- **Python** 3.9+ ([Download](https://python.org/))
-- **Git** ([Download](https://git-scm.com/))
-
-### In 5 Minuten starten
-
-```bash
-# 1. Repository klonen
-git clone https://github.com/DEIN_USERNAME/linux-mastery.git
-cd linux-mastery
-
-# 2. Backend starten
-cd backend
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
-pip install -r requirements.txt
-cp .env.example .env
-uvicorn server:app --port 8001 &
-
-# 3. Frontend starten
-cd ../frontend
-yarn install
-yarn start
-```
-
-Die App läuft jetzt auf **http://localhost:3000** 🎉
-
----
-
-## 📦 Installation
-
-### Option 1: Web-App (Entwicklung)
-
-#### Schritt 1: Repository klonen
-
-```bash
-git clone https://github.com/DEIN_USERNAME/linux-mastery.git
-cd linux-mastery
-```
-
-#### Schritt 2: Backend einrichten
-
-```bash
-cd backend
-
-# Virtuelle Python-Umgebung erstellen
-python -m venv venv
-
-# Aktivieren
-source venv/bin/activate      # Linux/Mac
-venv\Scripts\activate         # Windows (CMD)
-venv\Scripts\Activate.ps1     # Windows (PowerShell)
-
-# Abhängigkeiten installieren
-pip install -r requirements.txt
-
-# Konfiguration erstellen
-cp .env.example .env
-```
-
-**Backend `.env` Konfiguration:**
-```env
-MONGO_URL=mongodb://localhost:27017
-DB_NAME=linux_mastery
-CORS_ORIGINS=*
-```
-
-> **Hinweis:** MongoDB ist optional. Die App funktioniert auch ohne Datenbank - der Fortschritt wird dann nur im Browser gespeichert.
-
-#### Schritt 3: Frontend einrichten
-
-```bash
-cd ../frontend
-
-# Abhängigkeiten installieren (yarn empfohlen)
-yarn install
-# oder: npm install
-
-# Konfiguration erstellen
-cp .env.example .env
-```
-
-**Frontend `.env` Konfiguration:**
-```env
-REACT_APP_BACKEND_URL=http://localhost:8001
-WDS_SOCKET_PORT=3000
-```
-
-#### Schritt 4: Anwendung starten
-
-**Terminal 1 - Backend:**
-```bash
-cd backend
-source venv/bin/activate
-uvicorn server:app --host 0.0.0.0 --port 8001 --reload
-```
-
-**Terminal 2 - Frontend:**
-```bash
-cd frontend
-yarn start
-```
-
-Öffne **http://localhost:3000** im Browser.
-
----
-
-### Option 2: Windows Desktop-App
-
-#### Methode A: Installer herunterladen (empfohlen)
-
-1. Gehe zu [Releases](https://github.com/DEIN_USERNAME/linux-mastery/releases)
-2. Lade `Linux+Mastery-Setup-2.0.0.exe` herunter
-3. Führe den Installer aus
-4. Wähle im Setup:
-   - ✅ **Mit KI-Funktionen** - Vollständige App
-   - ❌ **Ohne KI** - Kleinere Installation ohne KI-Features
-
-#### Methode B: Selbst kompilieren
-
-**Voraussetzungen:**
-- Windows 10/11
-- Node.js 18+
-- Yarn (`npm install -g yarn`)
-
+### "yarn nicht gefunden"
 ```powershell
-# Repository klonen
-git clone https://github.com/DEIN_USERNAME/linux-mastery.git
-cd linux-mastery/frontend
-
-# Abhängigkeiten installieren
-yarn install
-
-# Windows Installer bauen
-yarn electron-build-win
+npm install -g yarn
 ```
 
-Der Installer wird in `frontend/dist/` erstellt:
-- `Linux+Mastery-Setup-2.0.0.exe` - Installer
-- `win-unpacked/` - Portable Version
+### "Port 3000 belegt"
+```powershell
+# Windows
+netstat -ano | findstr :3000
+taskkill /PID <PID> /F
+```
 
----
+### "CORS Error"
+→ Prüfe ob Backend läuft (http://localhost:8001/api/)
 
-### Option 3: Docker
-
+### "Module not found"
 ```bash
-# Mit Docker Compose (empfohlen)
-docker-compose up -d
-
-# Oder einzeln:
-# Backend
-docker build -t linux-mastery-backend ./backend
-docker run -p 8001:8001 linux-mastery-backend
-
-# Frontend
-docker build -t linux-mastery-frontend ./frontend
-docker run -p 3000:3000 linux-mastery-frontend
+# Im jeweiligen Ordner:
+rm -rf node_modules  # oder: rmdir /s node_modules (Windows)
+yarn install
 ```
-
----
-
-## 🤖 KI-Erklärungen einrichten
-
-Die App unterstützt **6 KI-Anbieter** für detaillierte Fragenerklärungen:
-
-| Anbieter | Modelle | Kosten | API-Key holen |
-|----------|---------|--------|---------------|
-| **OpenAI** | GPT-4o, GPT-4o-mini | ~$0.01/Frage | [platform.openai.com](https://platform.openai.com/api-keys) |
-| **Google Gemini** | 2.0 Flash, 1.5 Pro | Kostenlos* | [aistudio.google.com](https://aistudio.google.com/apikey) |
-| **Anthropic Claude** | 3.5 Sonnet, Haiku | ~$0.01/Frage | [console.anthropic.com](https://console.anthropic.com) |
-| **DeepSeek** | Chat, Coder | Sehr günstig | [platform.deepseek.com](https://platform.deepseek.com) |
-| **Qwen** | Max, Plus, Turbo | Günstig | [dashscope.aliyun.com](https://dashscope.console.aliyun.com) |
-| **Perplexity** | Sonar Pro, Sonar | ~$0.005/Frage | [perplexity.ai/settings](https://www.perplexity.ai/settings/api) |
-
-*\*Gemini: 15 Anfragen/Minute kostenlos*
-
-### So richtest du es ein:
-
-1. Öffne ein Quiz und beantworte die Fragen
-2. Auf der Ergebnisseite: Klicke auf **⚙️ KI-Einstellungen**
-3. Wähle deinen Anbieter (z.B. "Google Gemini")
-4. Füge deinen API-Key ein
-5. Klicke bei einer Frage auf **"KI-Erklärung"**
-
-> 🔒 **Sicherheit:** Dein API-Key wird nur lokal in deinem Browser gespeichert und niemals an unsere Server gesendet. Die Anfragen gehen direkt vom Backend an den KI-Anbieter.
 
 ---
 
 ## 📁 Projektstruktur
 
 ```
-linux-mastery/
+LinuxKX0-006/
 ├── backend/
-│   ├── server.py              # FastAPI Server (alle Endpoints)
-│   ├── questions_extended.py  # Erweiterte Fragendatenbank
-│   ├── requirements.txt       # Python Abhängigkeiten
-│   ├── Dockerfile
-│   └── .env.example
+│   ├── server.py           # FastAPI Backend
+│   ├── requirements.txt    # Python Abhängigkeiten
+│   └── .env.example        # Konfiguration
 │
 ├── frontend/
-│   ├── public/
-│   │   ├── electron.js        # Electron Hauptprozess
-│   │   └── preload.js         # Electron IPC Bridge
 │   ├── src/
-│   │   ├── App.js             # React Router & Context
-│   │   ├── components/
-│   │   │   ├── MatrixBackground.jsx  # Matrix Animation
-│   │   │   └── WelcomeScreen.jsx     # Username Dialog
-│   │   ├── pages/
-│   │   │   ├── Landing.jsx      # Startseite
-│   │   │   ├── Dashboard.jsx    # Übersicht & Stats
-│   │   │   ├── Quiz.jsx         # Quiz mit KI-Erklärungen
-│   │   │   ├── ExamSimulation.jsx  # 90-Min Prüfung
-│   │   │   ├── Flashcards.jsx   # Lernkarten + SRS
-│   │   │   └── StudyPlan.jsx    # 20-Wochen-Plan
-│   │   └── components/ui/       # Shadcn UI Komponenten
-│   ├── electron-builder.json    # Windows Build Config
-│   ├── installer.nsh            # NSIS Installer Script
-│   ├── package.json
-│   └── .env.example
+│   │   ├── pages/          # React Seiten
+│   │   └── components/     # UI Komponenten
+│   ├── package.json        # Node Abhängigkeiten
+│   └── .env.example        # Konfiguration
 │
-├── docker-compose.yml
-├── WINDOWS_BUILD.md            # Windows Build Anleitung
-├── OFFLINE_SETUP.md            # Offline Installation
-└── README.md                   # Diese Datei
+└── README.md
 ```
-
----
-
-## 🔌 API-Dokumentation
-
-**Basis-URL:** `http://localhost:8001/api`
-
-### Endpoints
-
-| Methode | Endpoint | Beschreibung |
-|---------|----------|--------------|
-| `GET` | `/` | API Info & Version |
-| `GET` | `/chapters` | Alle Kapitel (DE/EN) |
-| `GET` | `/questions/{chapter}` | Quiz-Fragen eines Kapitels |
-| `GET` | `/flashcards` | Alle Lernkarten |
-| `GET` | `/flashcards/{chapter}` | Lernkarten eines Kapitels |
-| `GET` | `/studyplan` | 20-Wochen-Lernplan |
-| `GET` | `/ai/providers` | Verfügbare KI-Anbieter |
-| `POST` | `/ai/explain` | KI-Erklärung anfordern |
-
-### Beispiel: KI-Erklärung
-
-```bash
-curl -X POST http://localhost:8001/api/ai/explain \
-  -H "Content-Type: application/json" \
-  -d '{
-    "question": "Which command lists loaded kernel modules?",
-    "options": ["lsmod", "modinfo", "modprobe", "insmod"],
-    "correct_answer": 0,
-    "provider": "gemini",
-    "api_key": "YOUR_API_KEY",
-    "language": "de"
-  }'
-```
-
----
-
-## 🛠️ Entwicklung
-
-### Backend testen
-
-```bash
-cd backend
-source venv/bin/activate
-pytest tests/ -v
-```
-
-### Frontend Linting
-
-```bash
-cd frontend
-yarn lint
-```
-
-### Electron Dev-Modus
-
-```bash
-cd frontend
-yarn electron-dev
-```
-
----
-
-## 🤝 Mitwirken
-
-Beiträge sind willkommen! So kannst du helfen:
-
-1. **Fork** das Repository
-2. Erstelle einen Branch: `git checkout -b feature/neue-funktion`
-3. Committe: `git commit -m 'Neue Funktion hinzugefügt'`
-4. Push: `git push origin feature/neue-funktion`
-5. Öffne einen **Pull Request**
-
-### Ideen für Beiträge
-
-- [ ] Weitere Prüfungsfragen hinzufügen
-- [ ] Mobile App (React Native)
-- [ ] Achievements/Badges System
-- [ ] Export zu PDF/Anki
-- [ ] Weitere Sprachen
 
 ---
 
 ## 📄 Lizenz
 
-MIT License - siehe [LICENSE](LICENSE)
+MIT License
 
 ---
 
-## 🙏 Danksagungen
-
-- [CompTIA](https://www.comptia.org/) für die Linux+ Zertifizierung
-- [Shadcn/UI](https://ui.shadcn.com/) für die UI-Komponenten
-- [Electron](https://www.electronjs.org/) für die Desktop-App
-- Alle Mitwirkenden und Tester
-
----
-
-## 📞 Support
-
-- **GitHub Issues:** [Issues öffnen](https://github.com/DEIN_USERNAME/linux-mastery/issues)
-- **Discussions:** [Diskussionen](https://github.com/DEIN_USERNAME/linux-mastery/discussions)
-
----
-
-<p align="center">
-  <b>Viel Erfolg bei deiner Linux+ Prüfung! 🎉🐧</b>
-</p>
+**Viel Erfolg bei der Linux+ Prüfung! 🎉**
