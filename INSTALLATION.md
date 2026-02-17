@@ -1,321 +1,210 @@
-# Installationsanleitung
+# Detaillierte Installationsanleitung
 
-Diese Anleitung führt dich Schritt für Schritt durch die Installation von Linux+ Mastery.
+## Windows Installation (Schritt für Schritt)
+
+### 1. Voraussetzungen installieren
+
+#### Node.js
+1. Öffne https://nodejs.org/
+2. Klicke auf den grünen "LTS" Button
+3. Führe den Installer aus
+4. Klicke immer "Next" → "Install" → "Finish"
+
+#### Python
+1. Öffne https://python.org/downloads/
+2. Klicke "Download Python 3.x.x"
+3. **WICHTIG:** Im Installer unten "Add Python to PATH" ankreuzen ✅
+4. Klicke "Install Now"
+
+#### Git
+1. Öffne https://git-scm.com/download/win
+2. Lade den Installer herunter
+3. Installiere mit Standardeinstellungen
+
+#### Prüfen ob alles installiert ist
+Öffne PowerShell und tippe:
+```powershell
+node --version    # sollte v18.x.x oder höher zeigen
+python --version  # sollte Python 3.x.x zeigen
+git --version     # sollte git version 2.x.x zeigen
+```
 
 ---
 
-## 📑 Inhaltsverzeichnis
-
-1. [Systemanforderungen](#1-systemanforderungen)
-2. [Windows Installation](#2-windows-installation)
-3. [macOS Installation](#3-macos-installation)
-4. [Linux Installation](#4-linux-installation)
-5. [Docker Installation](#5-docker-installation)
-6. [Fehlerbehebung](#6-fehlerbehebung)
-
----
-
-## 1. Systemanforderungen
-
-### Minimum
-- **OS:** Windows 10, macOS 10.15, Ubuntu 20.04
-- **RAM:** 4 GB
-- **Speicher:** 500 MB frei
-- **Browser:** Chrome, Firefox, Edge (aktuell)
-
-### Empfohlen für Entwicklung
-- **Node.js:** 18.x oder höher
-- **Python:** 3.9 oder höher
-- **MongoDB:** 6.x (optional)
-
----
-
-## 2. Windows Installation
-
-### Option A: Desktop-App (Empfohlen für Endanwender)
-
-1. **Installer herunterladen**
-   - Gehe zu [GitHub Releases](https://github.com/DEIN_USERNAME/linux-mastery/releases)
-   - Lade `Linux+Mastery-Setup-2.0.0.exe` herunter
-
-2. **Installation starten**
-   - Doppelklick auf die `.exe` Datei
-   - Windows SmartScreen: Klicke auf "Weitere Informationen" → "Trotzdem ausführen"
-
-3. **Installationsoptionen**
-   - Installationspfad wählen (Standard: `C:\Program Files\Linux+ Mastery`)
-   - **Mit KI-Funktionen:** Aktivieren für AI-gestützte Erklärungen
-   - **Desktop-Verknüpfung:** Empfohlen
-
-4. **Fertig!**
-   - Starte die App über das Desktop-Icon oder Startmenü
-
-### Option B: Entwicklungsumgebung
-
-#### Voraussetzungen installieren
-
-1. **Node.js installieren**
-   ```powershell
-   # Mit winget (Windows 11)
-   winget install OpenJS.NodeJS.LTS
-   
-   # Oder manuell: https://nodejs.org/
-   ```
-
-2. **Python installieren**
-   ```powershell
-   # Mit winget
-   winget install Python.Python.3.11
-   
-   # Oder manuell: https://python.org/
-   # ⚠️ Bei der Installation "Add to PATH" aktivieren!
-   ```
-
-3. **Git installieren**
-   ```powershell
-   winget install Git.Git
-   ```
-
-4. **Yarn installieren**
-   ```powershell
-   npm install -g yarn
-   ```
-
-#### Projekt einrichten
+### 2. Projekt herunterladen
 
 ```powershell
-# 1. Repository klonen
-git clone https://github.com/DEIN_USERNAME/linux-mastery.git
-cd linux-mastery
+# Gehe zum Desktop (oder wo du es haben willst)
+cd $HOME\Desktop
 
-# 2. Backend einrichten
+# Repository klonen
+git clone https://github.com/krockodog/LinuxKX0-006.git
+
+# In den Ordner wechseln
+cd LinuxKX0-006
+```
+
+---
+
+### 3. Backend einrichten
+
+```powershell
+# In den Backend-Ordner wechseln
 cd backend
+
+# Virtuelle Python-Umgebung erstellen
 python -m venv venv
-.\venv\Scripts\Activate.ps1
+
+# Umgebung aktivieren
+venv\Scripts\activate
+
+# Du siehst jetzt (venv) am Anfang der Zeile
+
+# Pakete installieren
 pip install -r requirements.txt
-copy .env.example .env
 
-# 3. Frontend einrichten
-cd ..\frontend
+# Konfigurationsdatei erstellen
+copy .env.example .env
+```
+
+---
+
+### 4. Frontend einrichten
+
+Öffne ein **NEUES** PowerShell-Fenster:
+
+```powershell
+# Zum Frontend-Ordner
+cd $HOME\Desktop\LinuxKX0-006\frontend
+
+# Yarn global installieren
+npm install -g yarn
+
+# Abhängigkeiten installieren
 yarn install
+
+# Konfiguration erstellen
 copy .env.example .env
 ```
 
-#### Anwendung starten
+**WICHTIG:** Öffne die `.env` Datei und ändere sie:
 
-**Terminal 1 (Backend):**
 ```powershell
-cd backend
-.\venv\Scripts\Activate.ps1
-uvicorn server:app --host 0.0.0.0 --port 8001 --reload
+notepad .env
 ```
 
-**Terminal 2 (Frontend):**
+Ändere den Inhalt zu:
+```
+REACT_APP_BACKEND_URL=http://localhost:8001
+WDS_SOCKET_PORT=3000
+```
+
+Speichern und schließen.
+
+---
+
+### 5. App starten
+
+#### Terminal 1 - Backend starten:
 ```powershell
-cd frontend
+cd $HOME\Desktop\LinuxKX0-006\backend
+venv\Scripts\activate
+python -m uvicorn server:app --host 0.0.0.0 --port 8001
+```
+
+Du solltest sehen:
+```
+INFO:     Uvicorn running on http://0.0.0.0:8001
+```
+
+#### Terminal 2 - Frontend starten:
+```powershell
+cd $HOME\Desktop\LinuxKX0-006\frontend
 yarn start
 ```
 
-Öffne http://localhost:3000 im Browser.
+Der Browser öffnet automatisch **http://localhost:3000**
 
 ---
 
-## 3. macOS Installation
+### 6. App benutzen
 
-### Voraussetzungen
+1. Klicke "Get Started" / "Loslegen"
+2. Gib deinen Namen ein
+3. Wähle ein Kapitel und starte das Quiz
+4. Oder gehe zu Lernkarten / Prüfungssimulation
 
-```bash
-# Homebrew installieren (falls nicht vorhanden)
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+---
 
-# Abhängigkeiten installieren
-brew install node python git
-npm install -g yarn
-```
+## App später wieder starten
 
-### Projekt einrichten
-
-```bash
-# Repository klonen
-git clone https://github.com/DEIN_USERNAME/linux-mastery.git
-cd linux-mastery
-
-# Backend einrichten
-cd backend
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-cp .env.example .env
-
-# Frontend einrichten
-cd ../frontend
-yarn install
-cp .env.example .env
-```
-
-### Starten
+Jedes Mal wenn du die App nutzen willst:
 
 **Terminal 1:**
-```bash
-cd backend && source venv/bin/activate && uvicorn server:app --port 8001 --reload
+```powershell
+cd $HOME\Desktop\LinuxKX0-006\backend
+venv\Scripts\activate
+python -m uvicorn server:app --host 0.0.0.0 --port 8001
 ```
 
 **Terminal 2:**
-```bash
-cd frontend && yarn start
+```powershell
+cd $HOME\Desktop\LinuxKX0-006\frontend
+yarn start
 ```
 
 ---
 
-## 4. Linux Installation
+## Fehlerbehebung
 
-### Ubuntu/Debian
+### "python wurde nicht erkannt"
+→ Python neu installieren, "Add to PATH" aktivieren
+
+### "yarn wurde nicht erkannt"
+```powershell
+npm install -g yarn
+```
+
+### "ENOENT: no such file"
+```powershell
+cd frontend
+rmdir /s /q node_modules
+yarn install
+```
+
+### Backend startet nicht
+```powershell
+cd backend
+venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+### Frontend zeigt Fehler
+- Prüfe ob Backend läuft: http://localhost:8001/api/
+- Prüfe .env Datei im frontend Ordner
+
+---
+
+## macOS / Linux
 
 ```bash
-# Abhängigkeiten installieren
-sudo apt update
-sudo apt install -y nodejs npm python3 python3-venv git
-sudo npm install -g yarn
+# Klonen
+git clone https://github.com/krockodog/LinuxKX0-006.git
+cd LinuxKX0-006
 
-# Repository klonen
-git clone https://github.com/DEIN_USERNAME/linux-mastery.git
-cd linux-mastery
-
-# Backend
+# Backend (Terminal 1)
 cd backend
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 cp .env.example .env
+python -m uvicorn server:app --host 0.0.0.0 --port 8001
 
-# Frontend
-cd ../frontend
+# Frontend (Terminal 2)
+cd frontend
+npm install -g yarn
 yarn install
 cp .env.example .env
+# Editiere .env: REACT_APP_BACKEND_URL=http://localhost:8001
+yarn start
 ```
-
-### Arch Linux
-
-```bash
-sudo pacman -S nodejs npm python python-pip git
-sudo npm install -g yarn
-# Rest wie oben
-```
-
-### Fedora
-
-```bash
-sudo dnf install nodejs npm python3 python3-pip git
-sudo npm install -g yarn
-# Rest wie oben
-```
-
----
-
-## 5. Docker Installation
-
-### Mit Docker Compose (Empfohlen)
-
-```bash
-# Repository klonen
-git clone https://github.com/DEIN_USERNAME/linux-mastery.git
-cd linux-mastery
-
-# Container starten
-docker-compose up -d
-
-# Logs ansehen
-docker-compose logs -f
-```
-
-Die App läuft auf:
-- **Frontend:** http://localhost:3000
-- **Backend:** http://localhost:8001
-
-### Einzelne Container
-
-```bash
-# Backend
-docker build -t linux-mastery-backend ./backend
-docker run -d -p 8001:8001 --name lm-backend linux-mastery-backend
-
-# Frontend
-docker build -t linux-mastery-frontend ./frontend
-docker run -d -p 3000:3000 --name lm-frontend linux-mastery-frontend
-```
-
----
-
-## 6. Fehlerbehebung
-
-### "ENOENT: no such file or directory"
-
-```bash
-# Abhängigkeiten neu installieren
-rm -rf node_modules
-yarn install
-```
-
-### "Python nicht gefunden" (Windows)
-
-1. Python Installer erneut ausführen
-2. "Modify" → "Add to PATH" aktivieren
-3. Terminal neu starten
-
-### "Port 3000/8001 bereits belegt"
-
-```bash
-# Prozess finden und beenden
-# Windows:
-netstat -ano | findstr :3000
-taskkill /PID <PID> /F
-
-# Linux/Mac:
-lsof -i :3000
-kill -9 <PID>
-```
-
-### "CORS Error" im Browser
-
-Prüfe die Backend `.env`:
-```env
-CORS_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
-```
-
-### MongoDB Verbindungsfehler
-
-Die App funktioniert auch ohne MongoDB. Der Fortschritt wird dann nur im Browser (localStorage) gespeichert.
-
-Falls MongoDB gewünscht:
-```bash
-# Docker
-docker run -d -p 27017:27017 --name mongodb mongo:6
-
-# Oder installieren:
-# https://www.mongodb.com/try/download/community
-```
-
-### Electron-Build schlägt fehl
-
-```bash
-# Cache leeren
-yarn cache clean
-
-# Node-Module neu installieren
-rm -rf node_modules
-yarn install
-
-# Erneut versuchen
-yarn electron-build-win
-```
-
----
-
-## Hilfe & Support
-
-- **GitHub Issues:** [Probleme melden](https://github.com/DEIN_USERNAME/linux-mastery/issues)
-- **Discussions:** [Fragen stellen](https://github.com/DEIN_USERNAME/linux-mastery/discussions)
-
----
-
-**Viel Erfolg bei deiner Linux+ Prüfung! 🐧🎉**
