@@ -1,4 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
+
 echo "========================================"
 echo "  CompTIA Linux+ App - Linux Start"
 echo "========================================"
@@ -6,32 +8,34 @@ echo ""
 
 cd "$(dirname "$0")"
 
-# Python pruefen
-if ! command -v python3 &> /dev/null; then
-    echo "[FEHLER] Python3 nicht gefunden!"
-    echo "Installiere mit: sudo apt install python3 python3-venv python3-pip"
-    exit 1
+if ! command -v python3 >/dev/null 2>&1; then
+  echo "[FEHLER] Python3 nicht gefunden!"
+  echo "Installiere mit: sudo apt install python3 python3-venv python3-pip"
+  exit 1
 fi
 
-# Virtuelle Umgebung erstellen falls nicht vorhanden
 if [ ! -d "venv" ]; then
-    echo "[1/3] Erstelle virtuelle Umgebung..."
-    python3 -m venv venv
+  echo "[1/3] Erstelle virtuelle Umgebung..."
+  python3 -m venv venv
 fi
 
-# Aktivieren
 echo "[2/3] Aktiviere Umgebung..."
+# shellcheck disable=SC1091
 source venv/bin/activate
 
-# Pakete installieren
 echo "[3/3] Installiere Pakete..."
-pip install -q fastapi uvicorn motor pymongo python-dotenv pydantic PyJWT httpx
+if [ -f "requirements-minimal.txt" ]; then
+  pip install -q -r requirements-minimal.txt
+else
+  pip install -q fastapi uvicorn motor pymongo python-dotenv pydantic PyJWT httpx requests
+fi
 
-# .env erstellen falls nicht vorhanden
 if [ ! -f ".env" ]; then
-    echo "MONGO_URL=mongodb://localhost:27017" > .env
-    echo "DB_NAME=linux_app" >> .env
-    echo "CORS_ORIGINS=*" >> .env
+  {
+    echo "MONGO_URL=mongodb://localhost:27017"
+    echo "DB_NAME=linux_app"
+    echo "CORS_ORIGINS=*"
+  } > .env
 fi
 
 echo ""
