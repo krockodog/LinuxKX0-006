@@ -16,7 +16,28 @@ import Flashcards from "./pages/Flashcards";
 import StudyPlan from "./pages/StudyPlan";
 import ExamSimulation from "./pages/ExamSimulation";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const sanitizeBaseUrl = (url) => (url || "").trim().replace(/\/$/, "");
+
+const resolveBackendUrl = () => {
+  const envUrl = sanitizeBaseUrl(process.env.REACT_APP_BACKEND_URL);
+  if (envUrl) {
+    return envUrl;
+  }
+
+  if (typeof window !== "undefined") {
+    const { protocol, hostname } = window.location;
+
+    if (hostname === "localhost" || hostname === "127.0.0.1") {
+      return `${protocol}//${hostname}:8001`;
+    }
+
+    return `${window.location.origin}`;
+  }
+
+  return "http://localhost:8001";
+};
+
+export const BACKEND_URL = resolveBackendUrl();
 export const API = `${BACKEND_URL}/api`;
 
 // Translations

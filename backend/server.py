@@ -22,9 +22,10 @@ load_dotenv(ROOT_DIR / '.env')
 from questions_extended import EXTENDED_QUESTIONS, EXTENDED_FLASHCARDS
 
 # MongoDB connection
-mongo_url = os.environ['MONGO_URL']
+mongo_url = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
+db_name = os.environ.get("DB_NAME", "linux_xk0_006")
 client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
+db = client[db_name]
 
 # JWT Secret
 JWT_SECRET = os.environ.get('JWT_SECRET', secrets.token_hex(32))
@@ -662,10 +663,12 @@ async def root():
 # Include router and middleware
 app.include_router(api_router)
 
+cors_origins = [origin.strip() for origin in os.environ.get("CORS_ORIGINS", "*").split(",") if origin.strip()]
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
+    allow_origins=cors_origins or ["*"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
