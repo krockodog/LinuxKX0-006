@@ -46,13 +46,14 @@ fi
 if [ ! -f ".env" ]; then
   {
     echo "REACT_APP_BACKEND_URL=http://localhost:8001"
-    echo "WDS_SOCKET_PORT=3000"
+    echo "PORT=7100"
+    echo "WDS_SOCKET_PORT=7100"
   } > .env
 fi
 
 echo ""
 echo "========================================"
-echo "  Frontend startet auf Port 3000"
+echo "  Frontend startet auf Port 7100"
 echo "  Browser oeffnet automatisch"
 echo "  Druecke Ctrl+C zum Beenden"
 echo "========================================"

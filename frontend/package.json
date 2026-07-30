@@ -61,7 +61,7 @@
     "start": "craco start",
     "build": "craco build",
     "test": "craco test",
-    "electron-dev": "concurrently \"BROWSER=none yarn start\" \"wait-on http://localhost:3000 && electron .\"",
+    "electron-dev": "concurrently \"BROWSER=none yarn start\" \"wait-on http://localhost:7100 && electron .\"",
     "electron-build": "yarn build && electron-builder --config electron-builder.json",
     "electron-build-win": "yarn build && electron-builder --config electron-builder.json --win"
   },

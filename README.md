@@ -42,7 +42,7 @@ frontend\start-windows.bat
 **Oder einfach:**
 1. `backend\start-windows.bat` doppelklicken
 2. `frontend\start-windows.bat` doppelklicken
-3. http://localhost:3000 öffnen
+3. http://localhost:7100 öffnen
 
 ## Später starten
 
