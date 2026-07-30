@@ -1,0 +1,893 @@
+<title>rootpath — CompTIA Linux+ XK0-006 Prüfungssimulator</title>
+<style>
+  /* ============================================================
+     rootpath — Landing page for the CompTIA Linux+ XK0-006 study app
+     Deliberate single-world design: an amber-phosphor CRT terminal.
+     (No light theme by choice — the dark terminal IS the identity.)
+     ============================================================ */
+
+  :root {
+    /* Grounds — cool near-black, deliberately blue-biased, not pure grey */
+    --bg:            #0a0e14;
+    --bg-elevated:   #0f1621;
+    --bg-terminal:   #05080d;
+    --bg-card:       #0d131d;
+
+    /* Ink */
+    --ink:           #cdd6e4;
+    --ink-dim:       #8a95a6;
+    --ink-faint:     #566072;
+
+    /* The single brand accent: amber phosphor */
+    --amber:         #ffb454;
+    --amber-deep:    #d98a2b;
+    --amber-glow:    rgba(255, 180, 84, 0.35);
+
+    /* Shell-syntax colour, used only for prompt paths (grounded, not a 2nd accent) */
+    --teal:          #4dd0b1;
+
+    /* Semantic, only inside quiz feedback */
+    --pass:          #4ec97a;
+    --fail:          #f0716b;
+
+    --line:          rgba(255, 255, 255, 0.07);
+    --line-strong:   rgba(255, 255, 255, 0.13);
+
+    --mono: "SF Mono", "JetBrains Mono", "Cascadia Code", "Fira Code", ui-monospace, Menlo, Consolas, monospace;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+    --maxw: 1120px;
+    --radius: 10px;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* Ambient: faint amber vignette + phosphor haze at the top */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background:
+      radial-gradient(120% 80% at 50% -10%, rgba(255, 180, 84, 0.08), transparent 55%),
+      radial-gradient(90% 60% at 90% 110%, rgba(77, 208, 177, 0.05), transparent 60%);
+  }
+
+  /* Global scanline overlay — very subtle, the CRT signature */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    background: repeating-linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.012) 0px,
+      rgba(255, 255, 255, 0.012) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+    mix-blend-mode: screen;
+  }
+
+  .wrap {
+    position: relative;
+    z-index: 2;
+    max-width: var(--maxw);
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  a { color: inherit; text-decoration: none; }
+
+  /* ---------- Type ---------- */
+  .mono { font-family: var(--mono); }
+
+  h1, h2, h3 { font-family: var(--mono); font-weight: 600; text-wrap: balance; margin: 0; }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--amber);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .eyebrow::before { content: "//"; color: var(--ink-faint); }
+
+  /* ---------- Nav ---------- */
+  header.nav {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    backdrop-filter: blur(12px);
+    background: rgba(10, 14, 20, 0.72);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 62px;
+  }
+  .brand {
+    font-family: var(--mono);
+    font-weight: 600;
+    font-size: 16px;
+    letter-spacing: -0.01em;
+    display: flex;
+    align-items: baseline;
+    gap: 2px;
+  }
+  .brand .prompt { color: var(--amber); text-shadow: 0 0 12px var(--amber-glow); }
+  .brand .tld { color: var(--ink-dim); }
+  .brand .cursor {
+    display: inline-block;
+    width: 8px;
+    height: 1.05em;
+    margin-left: 4px;
+    background: var(--amber);
+    transform: translateY(2px);
+    animation: blink 1.1s steps(1) infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .nav-links { display: flex; align-items: center; gap: 28px; font-size: 14px; }
+  .nav-links a { color: var(--ink-dim); transition: color 0.15s; font-family: var(--mono); }
+  .nav-links a:hover { color: var(--ink); }
+  .nav-links .ghbtn {
+    color: var(--ink);
+    border: 1px solid var(--line-strong);
+    padding: 7px 14px;
+    border-radius: 7px;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .nav-links .ghbtn:hover { border-color: var(--amber-deep); background: rgba(255,180,84,0.06); }
+  @media (max-width: 760px) { .nav-links a:not(.ghbtn) { display: none; } }
+
+  /* ---------- Hero ---------- */
+  .hero { padding: 72px 0 40px; }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: center;
+  }
+  @media (max-width: 940px) {
+    .hero-grid { grid-template-columns: 1fr; gap: 40px; }
+    .hero { padding: 48px 0 24px; }
+  }
+
+  h1.headline {
+    font-size: clamp(2.3rem, 5.4vw, 3.9rem);
+    line-height: 1.02;
+    letter-spacing: -0.03em;
+    margin: 18px 0 0;
+  }
+  h1.headline .hl { color: var(--amber); text-shadow: 0 0 24px var(--amber-glow); }
+
+  .subhead {
+    margin: 22px 0 0;
+    font-size: 1.075rem;
+    color: var(--ink-dim);
+    max-width: 42ch;
+  }
+
+  .hero-cta { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 30px; }
+
+  .btn {
+    font-family: var(--mono);
+    font-size: 14.5px;
+    font-weight: 600;
+    padding: 12px 22px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: transform 0.12s, box-shadow 0.2s, background 0.2s, border-color 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+  }
+  .btn-primary {
+    background: var(--amber);
+    color: #1a1206;
+    box-shadow: 0 0 0 rgba(255,180,84,0);
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 30px -8px var(--amber-glow); }
+  .btn-ghost { background: transparent; color: var(--ink); border-color: var(--line-strong); }
+  .btn-ghost:hover { border-color: var(--amber-deep); background: rgba(255,180,84,0.05); }
+
+  .hero-meta {
+    display: flex;
+    gap: 26px;
+    margin-top: 34px;
+    flex-wrap: wrap;
+  }
+  .hero-meta .m { display: flex; flex-direction: column; }
+  .hero-meta .m b {
+    font-family: var(--mono);
+    font-size: 1.35rem;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+  }
+  .hero-meta .m span { font-size: 12.5px; color: var(--ink-faint); font-family: var(--mono); letter-spacing: 0.04em; }
+
+  /* ---------- Terminal window ---------- */
+  .terminal {
+    background: var(--bg-terminal);
+    border: 1px solid var(--line-strong);
+    border-radius: 12px;
+    box-shadow:
+      0 30px 80px -30px rgba(0,0,0,0.9),
+      0 0 60px -30px var(--amber-glow),
+      inset 0 0 0 1px rgba(255,255,255,0.02);
+    overflow: hidden;
+    position: relative;
+  }
+  .terminal::after {
+    content: "";
+    position: absolute; inset: 0;
+    pointer-events: none;
+    background: repeating-linear-gradient(to bottom,
+      rgba(0,0,0,0) 0, rgba(0,0,0,0) 2px, rgba(0,0,0,0.14) 3px);
+    opacity: 0.5;
+    mix-blend-mode: multiply;
+  }
+  .term-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 14px;
+    background: linear-gradient(#131a24, #0d131c);
+    border-bottom: 1px solid var(--line);
+  }
+  .term-bar .dot { width: 11px; height: 11px; border-radius: 50%; }
+  .dot.r { background: #47301a; box-shadow: inset 0 0 0 1px rgba(255,180,84,0.25); }
+  .dot.y { background: #4a3a17; box-shadow: inset 0 0 0 1px rgba(255,180,84,0.25); }
+  .dot.g { background: #1f3a2a; box-shadow: inset 0 0 0 1px rgba(78,201,122,0.3); }
+  .term-title {
+    margin-left: 8px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--ink-faint);
+    letter-spacing: 0.02em;
+  }
+
+  .term-body {
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.65;
+    padding: 20px 20px 22px;
+    min-height: 420px;
+    color: var(--ink);
+    position: relative;
+    z-index: 1;
+  }
+  @media (max-width: 420px) { .term-body { font-size: 12.5px; padding: 16px; } }
+
+  .ln { white-space: pre-wrap; word-break: break-word; }
+  .prompt-sym { color: var(--pass); }
+  .path { color: var(--teal); }
+  .comment { color: var(--ink-faint); }
+  .out { color: var(--ink-dim); }
+  .accent { color: var(--amber); }
+
+  .q-text { color: var(--ink); margin: 10px 0 4px; }
+  .q-progress { color: var(--ink-faint); }
+
+  .opt {
+    display: block;
+    width: 100%;
+    text-align: left;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    color: var(--ink);
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    padding: 9px 12px;
+    margin: 7px 0;
+    cursor: pointer;
+    transition: border-color 0.12s, background 0.12s, color 0.12s, transform 0.08s;
+  }
+  .opt:hover:not(:disabled) { border-color: var(--amber-deep); background: rgba(255,180,84,0.05); transform: translateX(3px); }
+  .opt:disabled { cursor: default; }
+  .opt .key { color: var(--amber); margin-right: 10px; }
+  .opt.correct { border-color: var(--pass); background: rgba(78,201,122,0.09); color: #d7f2e0; }
+  .opt.correct .key { color: var(--pass); }
+  .opt.wrong { border-color: var(--fail); background: rgba(240,113,107,0.08); color: #f6d5d3; }
+  .opt.wrong .key { color: var(--fail); }
+  .opt:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+
+  .feedback { margin-top: 12px; }
+  .feedback .verdict.ok { color: var(--pass); }
+  .feedback .verdict.no { color: var(--fail); }
+  .feedback .explain { color: var(--ink-dim); margin-top: 2px; }
+  .hint { color: var(--ink-faint); margin-top: 12px; }
+  .hint .kbd {
+    color: var(--amber);
+    border: 1px solid var(--line-strong);
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-size: 12px;
+  }
+
+  .score-final { margin-top: 6px; }
+  .score-final .big {
+    font-size: 2.1rem;
+    color: var(--amber);
+    text-shadow: 0 0 20px var(--amber-glow);
+  }
+  .bar {
+    height: 6px;
+    border-radius: 4px;
+    background: rgba(255,255,255,0.06);
+    overflow: hidden;
+    margin: 14px 0;
+  }
+  .bar > i { display: block; height: 100%; background: var(--amber); box-shadow: 0 0 10px var(--amber-glow); transition: width 0.5s ease; }
+
+  .link-btn {
+    background: none; border: none; cursor: pointer;
+    font-family: var(--mono); font-size: 13.5px;
+    color: var(--amber); padding: 0; text-decoration: underline; text-underline-offset: 3px;
+  }
+  .link-btn:hover { color: var(--ink); }
+
+  /* ---------- Sections ---------- */
+  section { padding: 78px 0; position: relative; }
+  .sec-head { max-width: 60ch; margin-bottom: 42px; }
+  .sec-head h2 { font-size: clamp(1.6rem, 3.2vw, 2.3rem); letter-spacing: -0.02em; margin-top: 14px; line-height: 1.1; }
+  .sec-head p { color: var(--ink-dim); margin: 14px 0 0; }
+
+  .rule { border: none; border-top: 1px solid var(--line); margin: 0; }
+
+  /* Domains */
+  .domains { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+  @media (max-width: 720px) { .domains { grid-template-columns: 1fr; } }
+  .domain {
+    background: var(--bg-card);
+    padding: 26px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: background 0.15s;
+  }
+  .domain:hover { background: var(--bg-elevated); }
+  .domain .idx { font-family: var(--mono); font-size: 12px; color: var(--amber); letter-spacing: 0.1em; }
+  .domain h3 { font-size: 1.12rem; letter-spacing: -0.01em; }
+  .domain p { margin: 2px 0 0; color: var(--ink-dim); font-size: 0.94rem; }
+  .domain .cmds { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px; }
+  .domain .cmds code {
+    font-family: var(--mono); font-size: 11.5px;
+    color: var(--teal);
+    background: rgba(77,208,177,0.07);
+    border: 1px solid rgba(77,208,177,0.16);
+    border-radius: 5px; padding: 2px 7px;
+  }
+
+  /* Features */
+  .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  @media (max-width: 860px) { .features { grid-template-columns: 1fr; } }
+  .feature {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 24px;
+    background: linear-gradient(180deg, var(--bg-card), var(--bg));
+    transition: border-color 0.15s, transform 0.15s;
+  }
+  .feature:hover { border-color: var(--line-strong); transform: translateY(-3px); }
+  .feature .fi {
+    font-family: var(--mono); color: var(--amber); font-size: 13px;
+    border: 1px solid var(--line-strong); border-radius: 6px;
+    width: 34px; height: 34px; display: grid; place-items: center; margin-bottom: 16px;
+  }
+  .feature h3 { font-size: 1.08rem; margin-bottom: 8px; letter-spacing: -0.01em; }
+  .feature p { margin: 0; color: var(--ink-dim); font-size: 0.94rem; }
+  .feature .tag { display: inline-block; margin-top: 14px; font-family: var(--mono); font-size: 11.5px; color: var(--ink-faint); letter-spacing: 0.05em; }
+
+  /* AI strip */
+  .ai-strip {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 30px;
+    background:
+      radial-gradient(120% 140% at 0% 0%, rgba(255,180,84,0.06), transparent 50%),
+      var(--bg-card);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 30px;
+    flex-wrap: wrap;
+  }
+  .ai-strip .txt { max-width: 46ch; }
+  .ai-strip h3 { font-size: 1.3rem; letter-spacing: -0.01em; }
+  .ai-strip p { color: var(--ink-dim); margin: 10px 0 0; }
+  .providers { display: flex; flex-wrap: wrap; gap: 8px; }
+  .providers span {
+    font-family: var(--mono); font-size: 12px; color: var(--ink);
+    border: 1px solid var(--line-strong); border-radius: 6px; padding: 6px 11px;
+    background: var(--bg-terminal);
+  }
+
+  /* Steps */
+  .steps { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; counter-reset: step; }
+  @media (max-width: 780px) { .steps { grid-template-columns: 1fr; } }
+  .step { position: relative; padding-left: 4px; }
+  .step .n { font-family: var(--mono); color: var(--amber); font-size: 13px; letter-spacing: 0.1em; }
+  .step h3 { font-size: 1.05rem; margin: 8px 0 6px; }
+  .step p { margin: 0; color: var(--ink-dim); font-size: 0.94rem; }
+  .step .cmdline {
+    font-family: var(--mono); font-size: 12.5px; color: var(--ink);
+    background: var(--bg-terminal); border: 1px solid var(--line);
+    border-radius: 7px; padding: 10px 12px; margin-top: 12px;
+    overflow-x: auto; white-space: nowrap;
+  }
+  .cmdline .p { color: var(--pass); }
+  .cmdline .a { color: var(--amber); }
+
+  /* CTA */
+  .cta-final {
+    text-align: center;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 58px 30px;
+    background:
+      radial-gradient(90% 120% at 50% 0%, rgba(255,180,84,0.08), transparent 60%),
+      var(--bg-card);
+  }
+  .cta-final h2 { font-size: clamp(1.7rem, 3.6vw, 2.5rem); letter-spacing: -0.02em; }
+  .cta-final p { color: var(--ink-dim); margin: 14px auto 0; max-width: 48ch; }
+  .cta-final .hero-cta { justify-content: center; }
+  .cta-note { margin-top: 20px; font-family: var(--mono); font-size: 12.5px; color: var(--ink-faint); }
+
+  /* Footer */
+  footer { border-top: 1px solid var(--line); padding: 40px 0 60px; }
+  .foot-inner { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; align-items: center; }
+  footer .brand { font-size: 15px; }
+  footer p { color: var(--ink-faint); font-size: 13px; margin: 0; font-family: var(--mono); }
+  footer .disclaimer { max-width: 52ch; line-height: 1.55; margin-top: 6px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+  }
+</style>
+
+<header class="nav">
+  <div class="wrap nav-inner">
+    <div class="brand"><span class="prompt">root</span><span>path</span><span class="tld">/xk0-006</span><span class="cursor"></span></div>
+    <nav class="nav-links">
+      <a href="#simulator">Simulator</a>
+      <a href="#domains">Domänen</a>
+      <a href="#features">Funktionen</a>
+      <a href="#start" class="ghbtn">Installieren →</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <span class="eyebrow">CompTIA Linux+ · XK0-006 · 2025–2027</span>
+        <h1 class="headline">Bestehe die Prüfung<br>in der <span class="hl">Kommandozeile</span>.</h1>
+        <p class="subhead">
+          Eine Terminal-first Lern-App für die CompTIA Linux+ Zertifizierung: über 100 Prüfungsfragen,
+          eine echte 90-Minuten-Simulation und Lernkarten mit Spaced Repetition. Kostenlos, offline, ohne Anmeldung.
+        </p>
+        <div class="hero-cta">
+          <a class="btn btn-primary" href="#start">▸ Kostenlos starten</a>
+          <a class="btn btn-ghost" href="#simulator">Simulator testen</a>
+        </div>
+        <div class="hero-meta">
+          <div class="m"><b>100+</b><span>Prüfungsfragen</span></div>
+          <div class="m"><b>90 min</b><span>Prüfungssimulation</span></div>
+          <div class="m"><b>5</b><span>Kapitel · DE/EN</span></div>
+          <div class="m"><b>6</b><span>KI-Anbieter</span></div>
+        </div>
+      </div>
+
+      <!-- Interactive exam simulator -->
+      <div class="terminal" id="simulator">
+        <div class="term-bar">
+          <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+          <span class="term-title">exam-sim — rootpath@xk0-006: ~/prüfung</span>
+        </div>
+        <div class="term-body" id="term" aria-live="polite"></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap"><hr class="rule"></div>
+
+  <!-- DOMAINS -->
+  <section id="domains">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">Prüfungsstoff</span>
+        <h2>Fünf Kapitel, die dem XK0-006-Lehrplan folgen.</h2>
+        <p>Jede Frage ist einem Kapitel zugeordnet, damit du deine Schwachstellen gezielt trainierst — nicht nur ein Ergebnis am Ende.</p>
+      </div>
+      <div class="domains">
+        <div class="domain">
+          <span class="idx">KAPITEL 01</span>
+          <h3>System-Management</h3>
+          <p>Prozesse, Dienste, Paketverwaltung, Speicher und Dateisysteme verwalten.</p>
+          <div class="cmds"><code>systemctl</code><code>lvm</code><code>apt / dnf</code><code>fstab</code></div>
+        </div>
+        <div class="domain">
+          <span class="idx">KAPITEL 02</span>
+          <h3>Sicherheit &amp; Berechtigungen</h3>
+          <p>Benutzer, Gruppen, Berechtigungen, SELinux/AppArmor, SSH und Firewalls härten.</p>
+          <div class="cmds"><code>chmod</code><code>sudo</code><code>ufw / firewalld</code><code>ssh</code></div>
+        </div>
+        <div class="domain">
+          <span class="idx">KAPITEL 03</span>
+          <h3>Scripting &amp; Automatisierung</h3>
+          <p>Bash-Skripte, Cron, Git und Infrastruktur-Automatisierung schreiben und debuggen.</p>
+          <div class="cmds"><code>bash</code><code>cron</code><code>git</code><code>ansible</code></div>
+        </div>
+        <div class="domain">
+          <span class="idx">KAPITEL 04</span>
+          <h3>Container &amp; Cloud</h3>
+          <p>Container bauen und ausführen, Images verwalten und Cloud-Grundlagen verstehen.</p>
+          <div class="cmds"><code>podman</code><code>docker</code><code>kubectl</code></div>
+        </div>
+        <div class="domain">
+          <span class="idx">KAPITEL 05</span>
+          <h3>Troubleshooting &amp; Diagnose</h3>
+          <p>Netzwerk-, Storage- und Performance-Probleme systematisch analysieren.</p>
+          <div class="cmds"><code>ss</code><code>journalctl</code><code>dmesg</code><code>top</code></div>
+        </div>
+        <div class="domain" style="background:linear-gradient(135deg, rgba(255,180,84,0.07), var(--bg-card));">
+          <span class="idx">ZIEL</span>
+          <h3>Bestehensgrenze: 80 %</h3>
+          <p>Die Simulation spiegelt die echte Prüfung — 60 Fragen, 90 Minuten, Bestanden/Nicht bestanden.</p>
+          <div class="cmds"><code>60 Fragen</code><code>90:00</code><code>≥ 80 %</code></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section id="features">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">Funktionen</span>
+        <h2>Vier Lernmodi, ein Ziel: bestehen.</h2>
+      </div>
+      <div class="features">
+        <div class="feature">
+          <div class="fi mono">⏱</div>
+          <h3>Prüfungssimulation</h3>
+          <p>90-Minuten-Timer mit 60 Fragen wie in der echten Prüfung — inklusive Pause/Fortsetzen, 10-Minuten-Warnung und Fragennavigator.</p>
+          <span class="tag">Bestanden ab 80 %</span>
+        </div>
+        <div class="feature">
+          <div class="fi mono">↻</div>
+          <h3>Spaced Repetition</h3>
+          <p>Lernkarten mit intelligentem Algorithmus. Vier Stufen — Nochmal, Schwer, Gut, Leicht — steuern, wann du eine Karte wiedersiehst.</p>
+          <span class="tag">6 min · 1 h · 1 d · 3 d</span>
+        </div>
+        <div class="feature">
+          <div class="fi mono">▤</div>
+          <h3>20-Wochen-Plan</h3>
+          <p>Ein strukturierter Lernplan führt dich Woche für Woche durch alle Kapitel — dein Fortschritt bleibt lokal gespeichert.</p>
+          <span class="tag">localStorage · kein Login</span>
+        </div>
+        <div class="feature">
+          <div class="fi mono">✎</div>
+          <h3>Übungs-Quiz</h3>
+          <p>Über 100 Fragen in fünf Kapiteln mit sofortiger Auswertung. Jede falsche Antwort wird erklärt — nicht nur markiert.</p>
+          <span class="tag">100+ Fragen · DE/EN</span>
+        </div>
+        <div class="feature">
+          <div class="fi mono">◈</div>
+          <h3>Fortschritt &amp; Statistik</h3>
+          <p>Session-Statistiken, Kartenstatus (Neu, Fällig, Gelernt) und Trefferquoten zeigen dir jederzeit, wo du stehst.</p>
+          <span class="tag">100 % offline</span>
+        </div>
+        <div class="feature">
+          <div class="fi mono">⧉</div>
+          <h3>Desktop &amp; Cross-Platform</h3>
+          <p>Läuft als Web-App oder Electron-Desktop-App unter Windows, Linux und macOS — mit Ein-Klick-Start-Skripten.</p>
+          <span class="tag">Win · Linux · macOS</span>
+        </div>
+      </div>
+
+      <div style="margin-top:24px;">
+        <div class="ai-strip">
+          <div class="txt">
+            <span class="eyebrow">Optional</span>
+            <h3>KI-Erklärungen, dein Schlüssel.</h3>
+            <p>Hänge deinen eigenen API-Key an und lass dir jede Frage von einem der sechs unterstützten Anbieter erklären. Ganz ohne KI läuft alles genauso.</p>
+          </div>
+          <div class="providers">
+            <span>OpenAI</span><span>Gemini</span><span>Claude</span><span>DeepSeek</span><span>Qwen</span><span>Perplexity</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GET STARTED -->
+  <section id="start">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">Loslegen</span>
+        <h2>Drei Befehle bis zur ersten Frage.</h2>
+        <p>Open Source, keine Registrierung, keine Cloud. Node.js und Python installiert? Dann läuft die App in unter zwei Minuten.</p>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <span class="n">SCHRITT 01</span>
+          <h3>Projekt klonen</h3>
+          <p>Hol dir den Quellcode vom Repository auf deinen Rechner.</p>
+          <div class="cmdline"><span class="p">$</span> git clone <span class="a">github.com/krockodog/LinuxKX0-006</span></div>
+        </div>
+        <div class="step">
+          <span class="n">SCHRITT 02</span>
+          <h3>Backend starten</h3>
+          <p>Ein Skript pro Plattform startet die FastAPI-Server-Seite.</p>
+          <div class="cmdline"><span class="p">$</span> ./backend/<span class="a">start-linux.sh</span></div>
+        </div>
+        <div class="step">
+          <span class="n">SCHRITT 03</span>
+          <h3>Frontend öffnen</h3>
+          <p>Frontend starten und im Browser lernen — oder die Desktop-App bauen.</p>
+          <div class="cmdline"><span class="p">$</span> ./frontend/<span class="a">start-linux.sh</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FINAL CTA -->
+  <section>
+    <div class="wrap">
+      <div class="cta-final">
+        <span class="eyebrow">Bereit?</span>
+        <h2>Aus <span class="mono" style="color:var(--amber)">man pages</span> wird bestanden.</h2>
+        <p>Lade die App herunter und starte deinen 20-Wochen-Weg zur CompTIA Linux+ Zertifizierung. Kostenlos und Open Source.</p>
+        <div class="hero-cta">
+          <a class="btn btn-primary" href="https://github.com/krockodog/LinuxKX0-006">▸ Auf GitHub herunterladen</a>
+          <a class="btn btn-ghost" href="#simulator">Erst den Simulator testen</a>
+        </div>
+        <p class="cta-note">MIT-Lizenz · Windows / Linux / macOS · Deutsch &amp; Englisch</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap foot-inner">
+    <div>
+      <div class="brand"><span class="prompt">root</span><span>path</span><span class="tld">/xk0-006</span></div>
+      <p class="disclaimer">Inoffizielles Lernprojekt zur Prüfungsvorbereitung. „CompTIA" und „Linux+" sind Marken von CompTIA — dieses Projekt ist nicht mit CompTIA verbunden oder von ihr unterstützt.</p>
+    </div>
+    <p>© 2026 · Open Source · MIT</p>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    "use strict";
+
+    var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    // ---- Question bank: real, verifiable XK0-006-style items ----
+    var QUESTIONS = [
+      {
+        chapter: "Sicherheit & Berechtigungen",
+        q: "Welcher Befehl setzt die Berechtigungen einer Datei auf rwxr-xr-x?",
+        options: ["chmod 644 datei", "chmod 755 datei", "chmod 777 datei", "chmod +w datei"],
+        answer: 1,
+        why: "755 = rwx (Besitzer) r-x (Gruppe) r-x (Andere). 644 wäre rw-r--r--, 777 rwxrwxrwx."
+      },
+      {
+        chapter: "Troubleshooting & Diagnose",
+        q: "Womit zeigst du lauschende TCP-Ports mit der modernen iproute2-Suite an?",
+        options: ["netstat -a", "ss -tlnp", "ip route show", "lsof -i"],
+        answer: 1,
+        why: "ss -tlnp listet TCP (-t), lauschende (-l) Sockets numerisch (-n) mit Prozess (-p). ss ersetzt das veraltete netstat."
+      },
+      {
+        chapter: "System-Management",
+        q: "Welche Datei legt fest, welche Dateisysteme beim Booten gemountet werden?",
+        options: ["/etc/mtab", "/proc/mounts", "/etc/fstab", "/etc/mounts"],
+        answer: 2,
+        why: "/etc/fstab (file system table) definiert dauerhafte Mounts beim Systemstart. /proc/mounts zeigt nur aktuell aktive Mounts."
+      },
+      {
+        chapter: "System-Management",
+        q: "Welcher systemd-Befehl aktiviert einen Dienst dauerhaft beim Systemstart?",
+        options: ["systemctl start sshd", "systemctl enable sshd", "service sshd on", "chkconfig sshd start"],
+        answer: 1,
+        why: "enable erstellt den Autostart-Symlink; start läuft nur bis zum nächsten Reboot. Beides zusammen: systemctl enable --now."
+      },
+      {
+        chapter: "Troubleshooting & Diagnose",
+        q: "Wie folgst du einer Logdatei live, während neue Zeilen dazukommen?",
+        options: ["cat -f app.log", "head -f app.log", "tail -f app.log", "less app.log"],
+        answer: 2,
+        why: "tail -f (follow) hängt neue Zeilen laufend an. journalctl -f macht dasselbe für systemd-Journale."
+      }
+    ];
+
+    var term = document.getElementById("term");
+    var state = { i: 0, score: 0, answered: false };
+
+    function el(tag, cls, html) {
+      var e = document.createElement(tag);
+      if (cls) e.className = cls;
+      if (html != null) e.innerHTML = html;
+      return e;
+    }
+
+    function line(cls, html) { return el("div", "ln " + (cls || ""), html); }
+
+    function clear() { term.innerHTML = ""; }
+
+    // Typewriter for boot lines; instant if reduced motion
+    function typeLines(lines, done) {
+      if (reduce) {
+        lines.forEach(function (l) { term.appendChild(line(l.cls, l.text)); });
+        done && done();
+        return;
+      }
+      var idx = 0;
+      (function next() {
+        if (idx >= lines.length) { done && done(); return; }
+        var l = lines[idx++];
+        var node = line(l.cls, "");
+        term.appendChild(node);
+        var full = l.text, c = 0;
+        (function tick() {
+          node.innerHTML = full.slice(0, c) + '<span class="accent">▋</span>';
+          c++;
+          if (c <= full.length) { setTimeout(tick, 9); }
+          else { node.innerHTML = full; setTimeout(next, 90); }
+        })();
+      })();
+    }
+
+    function boot() {
+      clear();
+      typeLines([
+        { cls: "comment", text: "# rootpath exam-sim v6.0 — CompTIA Linux+ XK0-006" },
+        { cls: "out",     text: "Lade Fragenkatalog … 100+ Fragen · 5 Kapitel [OK]" },
+        { cls: "out",     text: "Modus: Übung · Sprache: DE · Bestehensgrenze: 80%" },
+        { cls: "",        text: '<span class="prompt-sym">➜</span> <span class="path">~/prüfung</span> ./start --demo 5' }
+      ], function () {
+        setTimeout(renderQuestion, reduce ? 0 : 260);
+      });
+    }
+
+    function renderQuestion() {
+      state.answered = false;
+      clear();
+      var Q = QUESTIONS[state.i];
+
+      term.appendChild(line("q-progress", "# Frage " + (state.i + 1) + "/" + QUESTIONS.length +
+        '  ·  <span class="accent">' + Q.chapter + "</span>  ·  Score: " + state.score));
+      term.appendChild(line("", '<span class="prompt-sym">➜</span> <span class="path">frage_' + (state.i + 1) + '</span> cat aufgabe.txt'));
+      term.appendChild(line("q-text", Q.q));
+
+      var optWrap = el("div", "opts");
+      Q.options.forEach(function (opt, k) {
+        var b = el("button", "opt");
+        b.type = "button";
+        b.innerHTML = '<span class="key">[' + (k + 1) + ']</span>' + opt;
+        b.setAttribute("data-k", k);
+        b.addEventListener("click", function () { choose(k); });
+        optWrap.appendChild(b);
+      });
+      term.appendChild(optWrap);
+
+      var hint = line("hint", 'Wähle per Klick oder Taste <span class="kbd">1</span>–<span class="kbd">' + Q.options.length + '</span>');
+      hint.id = "hint";
+      term.appendChild(hint);
+    }
+
+    function choose(k) {
+      if (state.answered) return;
+      state.answered = true;
+      var Q = QUESTIONS[state.i];
+      var correct = Q.answer;
+      var buttons = term.querySelectorAll(".opt");
+
+      buttons.forEach(function (b, bi) {
+        b.disabled = true;
+        if (bi === correct) b.classList.add("correct");
+        else if (bi === k) b.classList.add("wrong");
+      });
+
+      var ok = k === correct;
+      if (ok) state.score++;
+
+      var fb = el("div", "feedback");
+      fb.appendChild(line("verdict " + (ok ? "ok" : "no"),
+        (ok ? "✓ exit 0 — richtig!" : "✗ exit 1 — falsch.") +
+        (ok ? "" : ' Korrekt: <span class="accent">' + Q.options[correct] + "</span>")));
+      fb.appendChild(line("explain", "# " + Q.why));
+      term.appendChild(fb);
+
+      var h = document.getElementById("hint");
+      var last = state.i === QUESTIONS.length - 1;
+      h.innerHTML = last
+        ? 'Alle Fragen beantwortet — <span class="kbd">Enter</span> für dein Ergebnis'
+        : 'Weiter mit <span class="kbd">Enter</span> oder <span class="kbd">→</span>';
+    }
+
+    function advance() {
+      if (!state.answered) return;
+      if (state.i < QUESTIONS.length - 1) { state.i++; renderQuestion(); }
+      else { renderResult(); }
+    }
+
+    function renderResult() {
+      clear();
+      var total = QUESTIONS.length;
+      var pct = Math.round((state.score / total) * 100);
+      var passed = pct >= 80;
+
+      term.appendChild(line("comment", "# Demo abgeschlossen — Zusammenfassung"));
+      term.appendChild(line("", '<span class="prompt-sym">➜</span> <span class="path">~/prüfung</span> cat ergebnis.txt'));
+
+      var sf = el("div", "score-final");
+      sf.appendChild(line("", '<span class="big mono">' + state.score + "/" + total + "</span>"));
+      var bar = el("div", "bar"); var fill = el("i"); fill.style.width = "0%"; bar.appendChild(fill); sf.appendChild(bar);
+      sf.appendChild(line(passed ? "verdict ok" : "verdict no",
+        (passed ? "✓ Bestanden" : "✗ Noch nicht bestanden") + " — " + pct + "% (Grenze: 80%)"));
+      sf.appendChild(line("out", passed
+        ? "Stark. In der App warten 100+ Fragen und die volle 90-Minuten-Simulation."
+        : "Kein Problem — Spaced Repetition bringt genau diese Lücken in Form."));
+      term.appendChild(sf);
+
+      var actions = el("div", "feedback");
+      var restart = el("button", "link-btn", "↻ Nochmal versuchen");
+      restart.addEventListener("click", function () { state.i = 0; state.score = 0; boot(); });
+      actions.appendChild(restart);
+      term.appendChild(actions);
+
+      setTimeout(function () { fill.style.width = pct + "%"; }, reduce ? 0 : 120);
+    }
+
+    // Keyboard: 1–4 to answer, Enter/→ to advance
+    document.addEventListener("keydown", function (e) {
+      var Q = QUESTIONS[state.i];
+      if (!state.answered && Q && /^[1-9]$/.test(e.key)) {
+        var k = parseInt(e.key, 10) - 1;
+        if (k < Q.options.length) { choose(k); e.preventDefault(); }
+      } else if (state.answered && (e.key === "Enter" || e.key === "ArrowRight")) {
+        advance(); e.preventDefault();
+      }
+    });
+
+    // Kick off when the terminal scrolls into view (or immediately if already visible)
+    var started = false;
+    function start() { if (started) return; started = true; boot(); }
+    if ("IntersectionObserver" in window) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) { if (en.isIntersecting) { start(); io.disconnect(); } });
+      }, { threshold: 0.35 });
+      io.observe(document.getElementById("simulator"));
+    } else { start(); }
+  })();
+</script>
