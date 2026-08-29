@@ -104,7 +104,8 @@ Erstelle die Datei `frontend/.env`:
 
 ```env
 REACT_APP_BACKEND_URL=http://localhost:8001
-WDS_SOCKET_PORT=3000
+PORT=7100
+WDS_SOCKET_PORT=7100
 ```
 
 ---
@@ -129,7 +130,7 @@ cd frontend
 yarn start
 ```
 
-➡️ Öffne http://localhost:3000 im Browser
+➡️ Öffne http://localhost:7100 im Browser
 
 ---
 
@@ -230,7 +231,7 @@ services:
   frontend:
     build: ./frontend
     ports:
-      - "3000:3000"
+      - "7100:7100"
     environment:
       - REACT_APP_BACKEND_URL=http://localhost:8001
     depends_on:
@@ -271,8 +272,8 @@ sudo service mongodb start
 # Port 8001 freigeben (Linux/macOS)
 lsof -ti:8001 | xargs kill -9
 
-# Port 3000 freigeben
-lsof -ti:3000 | xargs kill -9
+# Port 7100 freigeben
+lsof -ti:7100 | xargs kill -9
 ```
 
 **Windows:**

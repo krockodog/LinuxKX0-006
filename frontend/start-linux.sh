@@ -43,16 +43,26 @@ if [ ! -x "node_modules/.bin/craco" ]; then
   install_dependencies
 fi
 
+# Setzt/aktualisiert einen Schluessel in .env idempotent,
+# ohne andere Eintraege zu ueberschreiben (auch bei bestehenden Dateien).
+upsert_env() {
+  local key="$1" value="$2"
+  if [ -f ".env" ] && grep -q "^${key}=" .env; then
+    grep -v "^${key}=" .env > .env.tmp && mv .env.tmp .env
+  fi
+  echo "${key}=${value}" >> .env
+}
+
 if [ ! -f ".env" ]; then
-  {
-    echo "REACT_APP_BACKEND_URL=http://localhost:8001"
-    echo "WDS_SOCKET_PORT=3000"
-  } > .env
+  echo "REACT_APP_BACKEND_URL=http://localhost:8001" > .env
 fi
+# Port-Migration: auch bestehende .env-Dateien auf 7100 aktualisieren
+upsert_env "PORT" "7100"
+upsert_env "WDS_SOCKET_PORT" "7100"
 
 echo ""
 echo "========================================"
-echo "  Frontend startet auf Port 3000"
+echo "  Frontend startet auf Port 7100"
 echo "  Browser oeffnet automatisch"
 echo "  Druecke Ctrl+C zum Beenden"
 echo "========================================"

@@ -31,12 +31,19 @@ if not exist "node_modules" (
 :: .env erstellen falls nicht vorhanden
 if not exist ".env" (
     echo REACT_APP_BACKEND_URL=http://localhost:8001 > .env
-    echo WDS_SOCKET_PORT=3000 >> .env
+    echo PORT=7100 >> .env
+    echo WDS_SOCKET_PORT=7100 >> .env
+) else (
+    :: Port-Migration: bestehende PORT/WDS_SOCKET_PORT-Eintraege entfernen und auf 7100 setzen
+    findstr /V /B /I "PORT= WDS_SOCKET_PORT=" .env > .env.tmp
+    move /Y .env.tmp .env >nul
+    echo PORT=7100 >> .env
+    echo WDS_SOCKET_PORT=7100 >> .env
 )
 
 echo.
 echo ========================================
-echo   Frontend startet auf Port 3000
+echo   Frontend startet auf Port 7100
 echo   Browser oeffnet automatisch
 echo   Druecke Ctrl+C zum Beenden
 echo ========================================

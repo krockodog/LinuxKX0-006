@@ -32,11 +32,13 @@ services:
     container_name: linux-mastery-frontend
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "7100:7100"
     depends_on:
       - backend
     networks:
       - app-network
+    environment:
+      - PORT=7100
 
 volumes:
   mongo_data:

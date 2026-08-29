@@ -96,7 +96,8 @@ notepad .env
 Ändere den Inhalt zu:
 ```
 REACT_APP_BACKEND_URL=http://localhost:8001
-WDS_SOCKET_PORT=3000
+PORT=7100
+WDS_SOCKET_PORT=7100
 ```
 
 Speichern und schließen.
@@ -123,7 +124,7 @@ cd $HOME\Desktop\LinuxKX0-006\frontend
 yarn start
 ```
 
-Der Browser öffnet automatisch **http://localhost:3000**
+Der Browser öffnet automatisch **http://localhost:7100**
 
 ---
 
